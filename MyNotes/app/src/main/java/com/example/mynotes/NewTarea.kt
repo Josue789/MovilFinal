@@ -1,7 +1,8 @@
 package com.example.mynotes
 
-import android.annotation.SuppressLint
+import android.app.DatePickerDialog
 import android.os.Bundle
+import android.widget.DatePicker
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Arrangement
@@ -10,11 +11,9 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Create
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -34,7 +33,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.mynotes.ui.theme.MyNotesTheme
 
-class NewNote : ComponentActivity() {
+class NewTarea : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -44,19 +43,23 @@ class NewNote : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    Greeting4()
+                    Greeting5()
                 }
             }
         }
     }
 }
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Greeting4( modifier: Modifier = Modifier) {
-    var title by remember{ mutableStateOf("title") }
+fun Greeting5( modifier: Modifier = Modifier) {
+    var title by remember{ mutableStateOf("Nueva Tarea") }
     var description by remember{ mutableStateOf("description") }
+    var date by remember {
+        mutableStateOf(
+            ""
+        )
+    }
     Scaffold (
         modifier = Modifier
             .padding(5.dp),
@@ -65,13 +68,16 @@ fun Greeting4( modifier: Modifier = Modifier) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 TextField(
-                    value = "Nueva nota",
+                    value = title,
                     onValueChange ={title = it},
-                    label = {"Nueva nota"},
+                    label = {"Nueva tarea"},
                     textStyle=MaterialTheme.typography.headlineMedium,
                     modifier = modifier
                         .fillMaxWidth()
                 )
+
+
+
             }
         },
         floatingActionButton = {
@@ -97,8 +103,8 @@ fun Greeting4( modifier: Modifier = Modifier) {
 
 @Preview(showBackground = true)
 @Composable
-fun GreetingPreview4() {
+fun GreetingPreview5() {
     MyNotesTheme {
-        Greeting4()
+        Greeting5()
     }
 }

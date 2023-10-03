@@ -1,6 +1,7 @@
 package com.example.mynotes
 
 import android.annotation.SuppressLint
+import android.icu.lang.UCharacter
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -18,11 +19,15 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.outlined.Clear
 import androidx.compose.material.icons.rounded.List
 import androidx.compose.material.icons.sharp.List
 import androidx.compose.material3.BottomAppBar
@@ -37,10 +42,12 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -48,6 +55,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.mynotes.ui.theme.MyNotesTheme
@@ -79,30 +87,25 @@ fun Greeting3(modifier: Modifier = Modifier) {
     }
     Scaffold(
         topBar = {
-            Column(
-                modifier = modifier
-                    .padding(5.dp)
-
-            ) {
-                Text(
-                    text = "Tareas",
-                )
-                TextField(
-                    value = "",
-                    label = {"Search"},
-                    onValueChange = {Search = it},
-                    modifier = modifier
-                        .fillMaxWidth())
-            }
+            CenterAlignedTopAppBar(
+                title = {
+                    Text(
+                        text = "TAREAS",
+                        style = MaterialTheme.typography.headlineSmall
+                    )
+                }
+            )
         },
         bottomBar  ={
             BottomAppBar(
+
                 actions = {
                     IconButton(
                         onClick = { /* do something */ },
                         modifier = Modifier
                             .fillMaxHeight()
-                            .width(80.dp)) {
+                            .width(80.dp))
+                    {
                         Column {
                             Icon(Icons.Filled.Create,
                                 contentDescription = "Notas"
@@ -115,8 +118,8 @@ fun Greeting3(modifier: Modifier = Modifier) {
                         onClick = { /* do something */ },
                         modifier = Modifier
                             .fillMaxHeight()
-                            .width(80.dp)
-                    ) {
+                            .width(80.dp))
+                    {
                         Column {
                             Icon(
                                 Icons.Filled.List,
@@ -125,54 +128,56 @@ fun Greeting3(modifier: Modifier = Modifier) {
                             Text(text = "Tareas")
                         }
                     }
-
                 },
-
-
-
-
-                )
+            )
         },
         floatingActionButton = {
             FloatingActionButton(onClick = {  }) {
                 Icon(Icons.Default.Add, contentDescription = "Add")
             }
         }
-    ){innerPadding ->
+    ){ padding ->
         Column(
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-            modifier = modifier
-                .padding(innerPadding)
-
-        ){
-            Card(
-                modifier = modifier
-                    .fillMaxWidth()
-                    .height(100.dp)
-
-            ){
-                Column {
-                    Row(
-                        modifier = modifier
-                            .height(50.dp)
-                            .fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically
-
-                    ){
-                        Text(text = "Title")
-                    }
-                    Row {
-                        Icon(Icons.Filled.DateRange, contentDescription = "FchLim")
-                        Text(text = "dd/mm/aaaa")
-                    }
-                }
-            }
-            Spacer(modifier = modifier.fillMaxWidth())
+            modifier = Modifier
+                .padding(padding)
+        ) {
+            BarraBusqueda( /*argumentos para la busqueda*/ )
         }
     }
 }
 
-
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun BarraBusqueda() {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth(),
+        horizontalArrangement = Arrangement.Center
+    ) {
+        OutlinedTextField(
+            value = "",
+            onValueChange = {},
+            label = {
+                Text(text = "Buscar")
+            },
+            trailingIcon = {
+                IconButton(onClick = { /*TODO*/ }) {
+                    Icon(imageVector = Icons.Outlined.Clear, contentDescription = null)
+                }
+            },/*
+            supportingText = {
+                Text(text = "Nombre o descripcion de la nota")
+            },*/
+            shape = RoundedCornerShape(16.dp),
+            keyboardOptions = KeyboardOptions(
+                imeAction = ImeAction.Search
+            ),
+            //keyboardactions = que hacer en el evento
+            modifier = Modifier
+                .fillMaxWidth(0.85f)
+        )
+    }
+}
 
 
 @OptIn(ExperimentalMaterial3Api::class)
