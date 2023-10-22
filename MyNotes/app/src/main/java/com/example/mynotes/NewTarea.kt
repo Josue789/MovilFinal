@@ -39,6 +39,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.mynotes.ViewModel.NewTareaViewModel
 import com.example.mynotes.ui.theme.MyNotesTheme
 import java.util.Calendar
 
@@ -61,8 +62,8 @@ class NewTarea : ComponentActivity() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Greeting5( modifier: Modifier = Modifier) {
-    var title by remember{ mutableStateOf("Nueva Tarea") }
+fun Greeting5(newTareaViewModel: NewTareaViewModel=NewTareaViewModel(),
+              modifier: Modifier = Modifier) {
     var description by remember{ mutableStateOf("description") }
 
     val context = LocalContext.current
@@ -88,18 +89,9 @@ fun Greeting5( modifier: Modifier = Modifier) {
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
-
-                TextField(
-                    value = title,
-                    onValueChange ={title = it},
-                    label = {"Nueva tarea"},
-                    textStyle=MaterialTheme.typography.headlineMedium,
-                    modifier = modifier
-                        .fillMaxWidth()
-                )
-
-
-
+                name(title = newTareaViewModel.name,
+                    updateName = {newTareaViewModel.updateName(it)},
+                    modifier = Modifier)
             }
         },
         floatingActionButton = {
@@ -128,8 +120,8 @@ fun Greeting5( modifier: Modifier = Modifier) {
                     modifier = Modifier.fillMaxWidth(),
                     trailingIcon = {
                         IconButton(onClick = {
-                                datePicker.show()
-                            }
+                            datePicker.show()
+                        }
                         ) {
                             Icon(Icons.Filled.DateRange, contentDescription = "")
                         }
@@ -164,19 +156,39 @@ fun Greeting5( modifier: Modifier = Modifier) {
 
             }
 
-            TextField(
-                value = "",
-                onValueChange ={description = it},
-                label={"Descripcion"},
-                modifier = modifier
-                    .fillMaxWidth()
-                    .fillMaxHeight()
+            content(
+                content = newTareaViewModel.content,
+                updateContent =  {newTareaViewModel.updateContent(it)},
+                modifier = Modifier
             )
 
         }
     }
 }
-
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun name(title: String, updateName: (String) -> Unit, modifier: Modifier){
+    TextField(
+        value = title,
+        onValueChange =updateName,
+        label = { Text(text = "Nombre tarea")},
+        textStyle=MaterialTheme.typography.headlineMedium,
+        modifier = modifier
+            .fillMaxWidth()
+    )
+}
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun content(content: String, updateContent: (String) -> Unit, modifier: Modifier){
+    TextField(
+        value = content,
+        onValueChange =updateContent,
+        label={ Text(text = "Descripcion")},
+        modifier = modifier
+            .fillMaxWidth()
+            .fillMaxHeight()
+    )
+}
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreview5() {

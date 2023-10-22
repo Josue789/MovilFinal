@@ -58,6 +58,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.mynotes.ViewModel.NoteViewModel
+import com.example.mynotes.ViewModel.TareaViewModel
 import com.example.mynotes.ui.theme.MyNotesTheme
 import java.time.format.TextStyle
 
@@ -81,10 +83,8 @@ class Tareas : ComponentActivity() {
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun Greeting3(modifier: Modifier = Modifier) {
-    var Search by remember {
-        mutableStateOf("Search")
-    }
+fun Greeting3(tareaViewModel: TareaViewModel = TareaViewModel(),
+              modifier: Modifier = Modifier) {
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
@@ -141,22 +141,23 @@ fun Greeting3(modifier: Modifier = Modifier) {
             modifier = Modifier
                 .padding(padding)
         ) {
-            BarraBusqueda( /*argumentos para la busqueda*/ )
+            BarraBusqueda(search = tareaViewModel.input,
+                onSearch= {tareaViewModel.updateSearch(it) })
         }
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun BarraBusqueda() {
+private fun BarraBusqueda(search: String,onSearch: (String) -> Unit)  {
     Row(
         modifier = Modifier
             .fillMaxWidth(),
         horizontalArrangement = Arrangement.Center
     ) {
         OutlinedTextField(
-            value = "",
-            onValueChange = {},
+            value = search,
+            onValueChange = onSearch,
             label = {
                 Text(text = "Buscar")
             },

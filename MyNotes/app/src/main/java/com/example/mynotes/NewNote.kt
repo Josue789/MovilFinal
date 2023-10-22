@@ -32,6 +32,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.mynotes.ViewModel.NewNoteViewModel
+import com.example.mynotes.ViewModel.NoteViewModel
 import com.example.mynotes.ui.theme.MyNotesTheme
 
 class NewNote : ComponentActivity() {
@@ -54,9 +56,8 @@ class NewNote : ComponentActivity() {
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Greeting4( modifier: Modifier = Modifier) {
-    var title by remember{ mutableStateOf("title") }
-    var description by remember{ mutableStateOf("description") }
+fun Greeting4(newNoteViewModel: NewNoteViewModel = NewNoteViewModel(),
+              modifier: Modifier = Modifier) {
     Scaffold (
         modifier = Modifier
             .padding(5.dp),
@@ -64,14 +65,9 @@ fun Greeting4( modifier: Modifier = Modifier) {
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                TextField(
-                    value = "Nueva nota",
-                    onValueChange ={title = it},
-                    label = {"Nueva nota"},
-                    textStyle=MaterialTheme.typography.headlineMedium,
-                    modifier = modifier
-                        .fillMaxWidth()
-                )
+                name(name = newNoteViewModel.inputName,
+                    changeName= {newNoteViewModel.updateName(it)},
+                    modifier = Modifier)
             }
         },
         floatingActionButton = {
@@ -84,15 +80,42 @@ fun Greeting4( modifier: Modifier = Modifier) {
             verticalArrangement = Arrangement.spacedBy(10.dp),
             modifier = modifier
                 .padding(innerPadding)) {
-            TextField(
-                value = "",
-                onValueChange ={description = it},
-                label={"Descripcion"},
-                modifier = modifier
-                    .fillMaxWidth().fillMaxHeight()
-            )
+            content(content = newNoteViewModel.inputContent, changeContent = {newNoteViewModel.updateContent(it)})
         }
     }
+}
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun name(
+    name: String,
+    changeName: (String) ->Unit,
+    modifier : Modifier=Modifier
+){
+    TextField(
+        value = name,
+        onValueChange = changeName,
+        label = { Text(text = "Nombre Nota")},
+        textStyle=MaterialTheme.typography.headlineMedium,
+        modifier = modifier
+            .fillMaxWidth()
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun content(
+    content: String,
+    changeContent: (String) ->Unit,
+    modifier : Modifier=Modifier
+){
+    TextField(
+        value = content,
+        onValueChange =changeContent,
+        label={ Text(text = "Descripcion")},
+        modifier = modifier
+            .fillMaxWidth()
+            .fillMaxHeight()
+    )
 }
 
 @Preview(showBackground = true)
