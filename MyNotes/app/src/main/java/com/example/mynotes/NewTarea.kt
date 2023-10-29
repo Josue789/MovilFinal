@@ -39,6 +39,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.example.mynotes.ViewModel.NewTareaViewModel
 import com.example.mynotes.ui.theme.MyNotesTheme
 import java.util.Calendar
@@ -53,7 +55,7 @@ class NewTarea : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    Greeting5()
+                    Greeting5(navHostController = rememberNavController())
                 }
             }
         }
@@ -62,7 +64,7 @@ class NewTarea : ComponentActivity() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Greeting5(newTareaViewModel: NewTareaViewModel=NewTareaViewModel(),
+fun Greeting5(navHostController: NavHostController, newTareaViewModel: NewTareaViewModel=NewTareaViewModel(),
               modifier: Modifier = Modifier) {
     var description by remember{ mutableStateOf("description") }
 
@@ -193,6 +195,6 @@ private fun content(content: String, updateContent: (String) -> Unit, modifier: 
 @Composable
 fun GreetingPreview5() {
     MyNotesTheme {
-        Greeting5()
+        Greeting5(navHostController = rememberNavController())
     }
 }

@@ -58,6 +58,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
+import com.example.mynotes.Navigation.Screens
 import com.example.mynotes.ViewModel.NoteViewModel
 import com.example.mynotes.ViewModel.TareaViewModel
 import com.example.mynotes.ui.theme.MyNotesTheme
@@ -73,7 +76,7 @@ class Tareas : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    Greeting3()
+                    Greeting3(navHostController = rememberNavController())
                 }
             }
         }
@@ -83,7 +86,7 @@ class Tareas : ComponentActivity() {
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun Greeting3(tareaViewModel: TareaViewModel = TareaViewModel(),
+fun Greeting3(navHostController: NavHostController, tareaViewModel: TareaViewModel = TareaViewModel(),
               modifier: Modifier = Modifier) {
     Scaffold(
         topBar = {
@@ -101,7 +104,7 @@ fun Greeting3(tareaViewModel: TareaViewModel = TareaViewModel(),
 
                 actions = {
                     IconButton(
-                        onClick = { /* do something */ },
+                        onClick = { navHostController.navigate(Screens.NotaScreen.route) },
                         modifier = Modifier
                             .fillMaxHeight()
                             .width(80.dp))
@@ -132,7 +135,7 @@ fun Greeting3(tareaViewModel: TareaViewModel = TareaViewModel(),
             )
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = {  }) {
+            FloatingActionButton(onClick = { navHostController.navigate(Screens.NewTareaScreen.route) }) {
                 Icon(Icons.Default.Add, contentDescription = "Add")
             }
         }
@@ -220,6 +223,6 @@ fun TopAppTareasBarSearch(modifier: Modifier=Modifier){
 @Composable
 fun GreetingPreview3() {
     MyNotesTheme {
-        Greeting3()
+        Greeting3(navHostController = rememberNavController())
     }
 }

@@ -44,6 +44,9 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
+import com.example.mynotes.Navigation.Screens
 import com.example.mynotes.State.NoteUiState
 import com.example.mynotes.ViewModel.NewNoteViewModel
 import com.example.mynotes.ViewModel.NoteViewModel
@@ -59,7 +62,7 @@ class Notes : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    Greeting2(modifier = Modifier)
+                    Greeting2(navHostController = rememberNavController())
                 }
             }
         }
@@ -69,7 +72,7 @@ class Notes : ComponentActivity() {
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun Greeting2(noteViewModel: NoteViewModel= NoteViewModel(),
+fun Greeting2(navHostController: NavHostController, noteViewModel: NoteViewModel= NoteViewModel(),
               modifier: Modifier = Modifier) {
 
     val NoteUiState by noteViewModel.uiState.collectAsState()
@@ -103,7 +106,7 @@ fun Greeting2(noteViewModel: NoteViewModel= NoteViewModel(),
 
                     }
                     IconButton(
-                        onClick = { /* do something */ },
+                        onClick = {navHostController.navigate(Screens.TareaScreen.route)},
                         modifier = Modifier
                             .fillMaxHeight()
                             .width(80.dp))
@@ -120,7 +123,7 @@ fun Greeting2(noteViewModel: NoteViewModel= NoteViewModel(),
             )
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = {  }) {
+            FloatingActionButton(onClick = { navHostController.navigate(Screens.NewNotaScreen.route) }) {
                 Icon(Icons.Default.Add, contentDescription = "Add")
             }
         }
@@ -211,6 +214,6 @@ fun TopAppBarSearch(modifier: Modifier=Modifier){
 @Composable
 fun GreetingPreview2() {
     MyNotesTheme {
-        Greeting2(modifier = Modifier)
+        Greeting2(navHostController = rememberNavController())
     }
 }

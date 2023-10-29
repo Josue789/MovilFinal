@@ -32,6 +32,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.example.mynotes.ViewModel.NewNoteViewModel
 import com.example.mynotes.ViewModel.NoteViewModel
 import com.example.mynotes.ui.theme.MyNotesTheme
@@ -46,7 +49,7 @@ class NewNote : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    Greeting4()
+                    Greeting4(navHostController = rememberNavController())
                 }
             }
         }
@@ -56,7 +59,7 @@ class NewNote : ComponentActivity() {
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Greeting4(newNoteViewModel: NewNoteViewModel = NewNoteViewModel(),
+fun Greeting4(navHostController: NavHostController, newNoteViewModel: NewNoteViewModel = NewNoteViewModel(),
               modifier: Modifier = Modifier) {
     Scaffold (
         modifier = Modifier
@@ -122,6 +125,6 @@ private fun content(
 @Composable
 fun GreetingPreview4() {
     MyNotesTheme {
-        Greeting4()
+        Greeting4(navHostController = rememberNavController())
     }
 }
