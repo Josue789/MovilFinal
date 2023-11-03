@@ -4,4 +4,5 @@
     <string name="title_activity_tareas">Tareas</string>
     <string name="title_activity_new_note">NewNote</string>
     <string name="title_activity_new_tarea">NewTarea</string>
+    <string name="title_activity_item_entry_view_model">ItemEntryViewModel</string>
 </resources>

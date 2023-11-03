@@ -10,11 +10,9 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Create
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -24,20 +22,17 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
+import androidx.lifecycle.ViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.mynotes.ViewModel.NewNoteViewModel
 import com.example.mynotes.ViewModel.NoteViewModel
 import com.example.mynotes.ui.theme.MyNotesTheme
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 class NewNote : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,44 +44,14 @@ class NewNote : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    Greeting4(navHostController = rememberNavController())
+                    Greeting4(navHostController = rememberNavController()
+                    )
                 }
             }
         }
     }
 }
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun Greeting4(navHostController: NavHostController, newNoteViewModel: NewNoteViewModel = NewNoteViewModel(),
-              modifier: Modifier = Modifier) {
-    Scaffold (
-        modifier = Modifier
-            .padding(5.dp),
-        topBar={
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                name(name = newNoteViewModel.inputName,
-                    changeName= {newNoteViewModel.updateName(it)},
-                    modifier = Modifier)
-            }
-        },
-        floatingActionButton = {
-            FloatingActionButton(onClick = {  }) {
-                Icon(Icons.Default.Add, contentDescription = "Add")
-            }
-        }
-    ){innerPadding ->
-        Column(
-            verticalArrangement = Arrangement.spacedBy(10.dp),
-            modifier = modifier
-                .padding(innerPadding)) {
-            content(content = newNoteViewModel.inputContent, changeContent = {newNoteViewModel.updateContent(it)})
-        }
-    }
-}
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun name(
@@ -121,10 +86,47 @@ private fun content(
     )
 }
 
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun Greeting4(
+    navHostController: NavHostController,
+    newNoteViewModel: NewNoteViewModel = viewModel(),
+    modifier: Modifier = Modifier) {
+
+    Scaffold (
+        modifier = Modifier
+            .padding(5.dp),
+        topBar={
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                name(name = newNoteViewModel.inputName,
+                    changeName= {newNoteViewModel.updateName(it)},
+                    modifier = Modifier)
+            }
+        },
+        floatingActionButton = {
+            FloatingActionButton(onClick = {  }) {
+                Icon(Icons.Default.Add, contentDescription = "Add")
+            }
+        }
+    ){innerPadding ->
+        Column(
+            verticalArrangement = Arrangement.spacedBy(10.dp),
+            modifier = modifier
+                .padding(innerPadding)) {
+            content(content = newNoteViewModel.inputContent, changeContent = {newNoteViewModel.updateContent(it)})
+        }
+    }
+}
+
+
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreview4() {
     MyNotesTheme {
-        Greeting4(navHostController = rememberNavController())
+        Greeting4(navHostController = rememberNavController()
+        )
     }
 }

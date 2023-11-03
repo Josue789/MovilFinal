@@ -8,6 +8,7 @@ import com.example.mynotes.Greeting3
 import com.example.mynotes.Greeting4
 import com.example.mynotes.Greeting5
 import androidx.navigation.compose.rememberNavController
+import com.example.mynotes.ViewModel.NewNoteViewModel
 
 @Composable
 fun NavigationScreen() {

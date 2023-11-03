@@ -39,11 +39,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.mynotes.ViewModel.NewTareaViewModel
 import com.example.mynotes.ui.theme.MyNotesTheme
 import java.util.Calendar
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.mynotes.ViewModel.NewNoteViewModel
+import java.util.Date
 
 class NewTarea : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -64,26 +69,11 @@ class NewTarea : ComponentActivity() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Greeting5(navHostController: NavHostController, newTareaViewModel: NewTareaViewModel=NewTareaViewModel(),
+fun Greeting5(navHostController: NavHostController,
+              newTareaViewModel: NewTareaViewModel = viewModel(),
               modifier: Modifier = Modifier) {
-    var description by remember{ mutableStateOf("description") }
 
-    val context = LocalContext.current
-    val calendar = Calendar.getInstance()
 
-    var selectedDateText by remember { mutableStateOf("") }
-
-    // Obtiene el año dias y mes
-    val year = calendar[Calendar.YEAR]
-    val month = calendar[Calendar.MONTH]
-    val dayOfMonth = calendar[Calendar.DAY_OF_MONTH]
-
-    val datePicker = DatePickerDialog(
-        context,
-        { _: DatePicker, selectedYear: Int, selectedMonth: Int, selectedDayOfMonth: Int ->
-            selectedDateText = "$selectedDayOfMonth/${selectedMonth + 1}/$selectedYear"
-        }, year, month, dayOfMonth
-    )
     Scaffold (
         modifier = Modifier
             .padding(5.dp),
@@ -111,50 +101,18 @@ fun Greeting5(navHostController: NavHostController, newTareaViewModel: NewTareaV
                 .padding(top = 5.dp)
                 .fillMaxWidth()){
 
-                TextField(
-                    value = if (selectedDateText.isNotEmpty()) {
-                        selectedDateText
-                    } else {
-                        "dd/mm/aaaa"
-                    },
-                    onValueChange = {selectedDateText=it},
-                    readOnly = true,
-                    modifier = Modifier.fillMaxWidth(),
-                    trailingIcon = {
-                        IconButton(onClick = {
-                            datePicker.show()
-                        }
-                        ) {
-                            Icon(Icons.Filled.DateRange, contentDescription = "")
-                        }
-                    }
-
-                )
+                startDate(
+                    newTareaViewModel = newTareaViewModel ,
+                    modifier = Modifier)
 
             }
             Row(modifier = modifier
                 .padding(top = 5.dp)
                 .fillMaxWidth()){
 
-                TextField(
-                    value = if (selectedDateText.isNotEmpty()) {
-                        selectedDateText
-                    } else {
-                        "dd/mm/aaaa"
-                    },
-                    onValueChange = {selectedDateText=it},
-                    readOnly = true,
-                    modifier = Modifier.fillMaxWidth(),
-                    trailingIcon = {
-                        IconButton(
-                            onClick = {
-                                datePicker.show()
-                            }
-                        ) {
-                            Icon(Icons.Filled.Notifications, contentDescription = "")
-                        }
-                    }
-                )
+                endDate(
+                    newTareaViewModel = newTareaViewModel ,
+                    modifier = Modifier)
 
             }
 
@@ -191,6 +149,83 @@ private fun content(content: String, updateContent: (String) -> Unit, modifier: 
             .fillMaxHeight()
     )
 }
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun startDate(newTareaViewModel: NewTareaViewModel, modifier: Modifier){
+    val context = LocalContext.current
+    val calendar = Calendar.getInstance()
+
+    // Obtiene el año dias y mes
+    val year = calendar[Calendar.YEAR]
+    val month = calendar[Calendar.MONTH]
+    val dayOfMonth = calendar[Calendar.DAY_OF_MONTH]
+
+    val datePicker = DatePickerDialog(
+        context,
+        { _: DatePicker, selectedYear: Int, selectedMonth: Int, selectedDayOfMonth: Int ->
+            newTareaViewModel.updateStart("$selectedDayOfMonth/${selectedMonth + 1}/$selectedYear")
+        }, year, month, dayOfMonth
+    )
+    TextField(
+        value = if (newTareaViewModel.start.isNotEmpty()) {
+            newTareaViewModel.start
+        } else {
+            "dd/mm/aaaa"
+        },
+        onValueChange = {newTareaViewModel.updateStart(it)},
+        readOnly = true,
+        modifier = Modifier.fillMaxWidth(),
+        trailingIcon = {
+            IconButton(onClick = {
+                datePicker.show()
+            }
+            ) {
+                Icon(Icons.Filled.DateRange, contentDescription = "")
+            }
+        }
+
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun endDate(newTareaViewModel: NewTareaViewModel, modifier: Modifier){
+    val context = LocalContext.current
+    val calendar = Calendar.getInstance()
+
+    // Obtiene el año dias y mes
+    val year = calendar[Calendar.YEAR]
+    val month = calendar[Calendar.MONTH]
+    val dayOfMonth = calendar[Calendar.DAY_OF_MONTH]
+
+    val datePicker = DatePickerDialog(
+        context,
+        { _: DatePicker, selectedYear: Int, selectedMonth: Int, selectedDayOfMonth: Int ->
+            newTareaViewModel.updateEnd("$selectedDayOfMonth/${selectedMonth + 1}/$selectedYear")
+        }, year, month, dayOfMonth
+    )
+    TextField(
+        value = if (newTareaViewModel.end.isNotEmpty()) {
+            newTareaViewModel.end
+        } else {
+            "dd/mm/aaaa"
+        },
+        onValueChange = {newTareaViewModel.updateStart(it)},
+        readOnly = true,
+        modifier = Modifier.fillMaxWidth(),
+        trailingIcon = {
+            IconButton(onClick = {
+                datePicker.show()
+            }
+            ) {
+                Icon(Icons.Filled.DateRange, contentDescription = "")
+            }
+        }
+
+    )
+}
+
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreview5() {
