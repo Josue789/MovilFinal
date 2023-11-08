@@ -1,6 +1,7 @@
 package com.example.mynotes
 
 import android.annotation.SuppressLint
+import android.graphics.Paint.Align
 import android.icu.text.StringSearch
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -39,6 +40,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
@@ -51,6 +54,7 @@ import com.example.mynotes.State.NoteUiState
 import com.example.mynotes.ViewModel.NewNoteViewModel
 import com.example.mynotes.ViewModel.NoteViewModel
 import com.example.mynotes.ui.theme.MyNotesTheme
+import org.intellij.lang.annotations.JdkConstants.HorizontalAlignment
 
 class Notes : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -88,37 +92,43 @@ fun Greeting2(navHostController: NavHostController, noteViewModel: NoteViewModel
             )
         },
         bottomBar  ={
+
             BottomAppBar(
 
                 actions = {
-                    IconButton(
-                        onClick = { /* do something */ },
-                        modifier = Modifier
-                            .fillMaxHeight()
-                            .width(80.dp))
-                    {
-                        Column {
-                            Icon(Icons.Filled.Create,
-                                contentDescription = "Notas"
-                            )
-                            Text(text = "Notas")
-                        }
+                    Row(horizontalArrangement = Arrangement.Center){
+                        IconButton(
+                            onClick = { /* do something */ },
+                            modifier = Modifier
+                                .align(CenterVertically)
+                                .fillMaxHeight()
+                                .width(80.dp))
 
-                    }
-                    IconButton(
-                        onClick = {navHostController.navigate(Screens.TareaScreen.route)},
-                        modifier = Modifier
-                            .fillMaxHeight()
-                            .width(80.dp))
-                    {
-                        Column {
-                            Icon(
-                                Icons.Filled.List,
-                                contentDescription = "Tareas",
-                            )
-                            Text(text = "Tareas")
+                        {
+                            Column(verticalArrangement = Arrangement.Center) {
+                                Icon(Icons.Filled.Create,
+                                    contentDescription = "Notas"
+                                )
+                                Text(text = "Notas")
+                            }
+
+                        }
+                        IconButton(
+                            onClick = {navHostController.navigate(Screens.TareaScreen.route)},
+                            modifier = Modifier
+                                .fillMaxHeight()
+                                .width(80.dp))
+                        {
+                            Column {
+                                Icon(
+                                    Icons.Filled.List,
+                                    contentDescription = "Tareas",
+                                )
+                                Text(text = "Tareas")
+                            }
                         }
                     }
+
                 },
             )
         },

@@ -17,22 +17,34 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.AttachFile
+import androidx.compose.material.icons.filled.CameraAlt
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.FileOpen
+import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.Button
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -47,6 +59,7 @@ import com.example.mynotes.ViewModel.NewTareaViewModel
 import com.example.mynotes.ui.theme.MyNotesTheme
 import java.util.Calendar
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.mynotes.Navigation.Screens
 import com.example.mynotes.ViewModel.NewNoteViewModel
 import java.util.Date
 
@@ -73,43 +86,91 @@ fun Greeting5(navHostController: NavHostController,
               newTareaViewModel: NewTareaViewModel = viewModel(),
               modifier: Modifier = Modifier) {
 
-
+    val sheetState = rememberModalBottomSheetState()
+    val scope = rememberCoroutineScope()
+    var showBottomSheet by remember { mutableStateOf(false) }
     Scaffold (
-        modifier = Modifier
-            .padding(5.dp),
+        modifier = Modifier,
         topBar={
+            CenterAlignedTopAppBar(
+                navigationIcon = {
+                    IconButton(onClick = { navHostController.navigate(Screens.NotaScreen.route)}) {
+                        Icon(Icons.Filled.ArrowBack, contentDescription = null)
+                    }
+                },
+                title = {},
+                actions = {
+                    IconButton(
+                        onClick = { /*TODO*/ }) {
+                        Icon(Icons.Filled.Check, contentDescription = "done")
+                    }
+                }
+            )
+
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                name(title = newTareaViewModel.name,
-                    updateName = {newTareaViewModel.updateName(it)},
-                    modifier = Modifier)
+
             }
+
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = {  }) {
-                Icon(Icons.Default.Add, contentDescription = "Add")
+            FloatingActionButton(onClick = {showBottomSheet = true}) {
+                Icon(Icons.Default.AttachFile, contentDescription = "Add")
             }
         }
-    ){innerPadding ->
+    ){contentPadding ->
+        if (showBottomSheet) {
+            ModalBottomSheet(
+                onDismissRequest = {
+                    showBottomSheet = false
+                },
+                sheetState = sheetState
+            ) {
+                // Sheet content
+
+                TextButton(onClick = { /*TODO*/ }) {
+                    Row(
+                        modifier = modifier.fillMaxWidth()
+                    ) {
+                        Icon(Icons.Filled.CameraAlt, contentDescription = "Photo")
+                        Text(text = "Foto/Imagen")
+                    }
+                }
+                TextButton(onClick = { /*TODO*/ }) {
+                    Row(
+                        modifier = modifier.fillMaxWidth()
+                    ) {
+                        Icon(Icons.Filled.Mic, contentDescription = "Photo")
+                        Text(text = "Audio")
+                    }
+                }
+
+                TextButton(onClick = { /*TODO*/ }) {
+                    Row(
+                        modifier = modifier.fillMaxWidth()
+                    ) {
+                        Icon(Icons.Filled.FileOpen, contentDescription = "Photo")
+                        Text(text = "Documento")
+                    }
+                }
+            }
+        }
         Column(
             verticalArrangement = Arrangement.spacedBy(10.dp),
             modifier = modifier
-                .padding(innerPadding)) {
+                .padding(contentPadding)) {
 
+            name(title = newTareaViewModel.name, updateName = {newTareaViewModel.updateContent(it)}, modifier = modifier)
             Row(modifier = modifier
-                .padding(top = 5.dp)
                 .fillMaxWidth()){
-
                 startDate(
                     newTareaViewModel = newTareaViewModel ,
                     modifier = Modifier)
 
             }
             Row(modifier = modifier
-                .padding(top = 5.dp)
                 .fillMaxWidth()){
-
                 endDate(
                     newTareaViewModel = newTareaViewModel ,
                     modifier = Modifier)
@@ -219,7 +280,7 @@ private fun endDate(newTareaViewModel: NewTareaViewModel, modifier: Modifier){
                 datePicker.show()
             }
             ) {
-                Icon(Icons.Filled.DateRange, contentDescription = "")
+                Icon(Icons.Filled.Notifications, contentDescription = "")
             }
         }
 

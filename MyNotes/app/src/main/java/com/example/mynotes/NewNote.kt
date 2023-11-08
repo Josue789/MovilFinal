@@ -1,6 +1,5 @@
 package com.example.mynotes
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -11,17 +10,38 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.AttachFile
+import androidx.compose.material.icons.filled.Attachment
+import androidx.compose.material.icons.filled.CameraAlt
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.FileOpen
+import androidx.compose.material.icons.filled.Mic
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.Button
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -33,6 +53,9 @@ import com.example.mynotes.ViewModel.NewNoteViewModel
 import com.example.mynotes.ViewModel.NoteViewModel
 import com.example.mynotes.ui.theme.MyNotesTheme
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.Navigation
+import com.example.mynotes.Navigation.Screens
+import kotlinx.coroutines.launch
 
 class NewNote : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -64,6 +87,7 @@ private fun name(
         onValueChange = changeName,
         label = { Text(text = "Nombre Nota")},
         textStyle=MaterialTheme.typography.headlineMedium,
+
         modifier = modifier
             .fillMaxWidth()
     )
@@ -86,36 +110,92 @@ private fun content(
     )
 }
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Greeting4(
     navHostController: NavHostController,
     newNoteViewModel: NewNoteViewModel = viewModel(),
     modifier: Modifier = Modifier) {
-
+    val sheetState = rememberModalBottomSheetState()
+    val scope = rememberCoroutineScope()
+    var showBottomSheet by remember { mutableStateOf(false) }
     Scaffold (
         modifier = Modifier
             .padding(5.dp),
         topBar={
+            CenterAlignedTopAppBar(
+                navigationIcon = {
+                    IconButton(onClick = { navHostController.navigate(Screens.NotaScreen.route)}) {
+                        Icon(Icons.Filled.ArrowBack, contentDescription = null)
+                    }
+                },
+                title = {},
+                actions = {
+                    IconButton(
+                        onClick = { /*TODO*/ }) {
+                        Icon(Icons.Filled.Check, contentDescription = "done")
+                    }
+                }
+            )
+
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                name(name = newNoteViewModel.inputName,
-                    changeName= {newNoteViewModel.updateName(it)},
-                    modifier = Modifier)
+
             }
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = {  }) {
-                Icon(Icons.Default.Add, contentDescription = "Add")
+            ExtendedFloatingActionButton(
+                text = { Text("Add files") },
+                icon = { Icon(Icons.Filled.AttachFile, contentDescription = "") },
+                onClick = {
+                    showBottomSheet = true
+                }
+            )
+        }
+    ){contentPadding ->
+        if (showBottomSheet) {
+            ModalBottomSheet(
+                onDismissRequest = {
+                    showBottomSheet = false
+                },
+                sheetState = sheetState
+            ) {
+                // Sheet content
+
+                TextButton(onClick = { /*TODO*/ }) {
+                    Row(
+                        modifier = modifier.fillMaxWidth()
+                    ) {
+                        Icon(Icons.Filled.CameraAlt, contentDescription = "Photo")
+                        Text(text = "Foto/Imagen")
+                    }
+                }
+                TextButton(onClick = { /*TODO*/ }) {
+                    Row(
+                        modifier = modifier.fillMaxWidth()
+                    ) {
+                        Icon(Icons.Filled.Mic, contentDescription = "Photo")
+                        Text(text = "Audio")
+                    }
+                }
+
+                TextButton(onClick = { /*TODO*/ }) {
+                    Row(
+                        modifier = modifier.fillMaxWidth()
+                    ) {
+                        Icon(Icons.Filled.FileOpen, contentDescription = "Photo")
+                        Text(text = "Documento")
+                    }
+                }
             }
         }
-    ){innerPadding ->
         Column(
             verticalArrangement = Arrangement.spacedBy(10.dp),
             modifier = modifier
-                .padding(innerPadding)) {
+                .padding(contentPadding)) {
+            name(name = newNoteViewModel.inputName, changeName = {newNoteViewModel.updateName(it)})
             content(content = newNoteViewModel.inputContent, changeContent = {newNoteViewModel.updateContent(it)})
         }
     }
