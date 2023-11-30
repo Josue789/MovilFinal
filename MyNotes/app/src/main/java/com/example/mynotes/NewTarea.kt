@@ -61,6 +61,7 @@ import java.util.Calendar
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.mynotes.Navigation.Screens
 import com.example.mynotes.ViewModel.NewNoteViewModel
+import kotlinx.coroutines.launch
 import java.util.Date
 
 class NewTarea : ComponentActivity() {
@@ -87,6 +88,7 @@ fun Greeting5(navHostController: NavHostController,
               modifier: Modifier = Modifier) {
 
     val sheetState = rememberModalBottomSheetState()
+    val coroutineScope = rememberCoroutineScope()
     val scope = rememberCoroutineScope()
     var showBottomSheet by remember { mutableStateOf(false) }
     Scaffold (
@@ -101,7 +103,12 @@ fun Greeting5(navHostController: NavHostController,
                 title = {},
                 actions = {
                     IconButton(
-                        onClick = { /*TODO*/ }) {
+                        onClick = {
+                            coroutineScope.launch {
+                                newTareaViewModel.saveItem()
+                                navHostController.popBackStack()
+                            }
+                        }) {
                         Icon(Icons.Filled.Check, contentDescription = "done")
                     }
                 }
@@ -161,7 +168,7 @@ fun Greeting5(navHostController: NavHostController,
             modifier = modifier
                 .padding(contentPadding)) {
 
-            name(title = newTareaViewModel.name, updateName = {newTareaViewModel.updateContent(it)}, modifier = modifier)
+            name(title = newTareaViewModel.doesUiState.doesDetails, updateName = newTareaViewModel::updateUiState, modifier = modifier)
             Row(modifier = modifier
                 .fillMaxWidth()){
                 startDate(
@@ -176,10 +183,9 @@ fun Greeting5(navHostController: NavHostController,
                     modifier = Modifier)
 
             }
-
             content(
-                content = newTareaViewModel.content,
-                updateContent =  {newTareaViewModel.updateContent(it)},
+                content = newTareaViewModel.doesUiState.doesDetails,
+                updateContent =  newTareaViewModel::updateUiState,
                 modifier = Modifier
             )
 
@@ -188,10 +194,13 @@ fun Greeting5(navHostController: NavHostController,
 }
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun name(title: String, updateName: (String) -> Unit, modifier: Modifier){
+private fun name(
+    title: NewTareaViewModel.DoesDetails,
+    updateName: (NewTareaViewModel.DoesDetails) -> Unit,
+    modifier: Modifier){
     TextField(
-        value = title,
-        onValueChange =updateName,
+        value = title.titulo,
+        onValueChange = { updateName(title.copy(titulo = it)) },
         label = { Text(text = "Nombre tarea")},
         textStyle=MaterialTheme.typography.headlineMedium,
         modifier = modifier
@@ -200,17 +209,36 @@ private fun name(title: String, updateName: (String) -> Unit, modifier: Modifier
 }
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun content(content: String, updateContent: (String) -> Unit, modifier: Modifier){
+private fun content(
+    content: NewTareaViewModel.DoesDetails,
+    updateContent: (NewTareaViewModel.DoesDetails) -> Unit,
+    modifier: Modifier){
     TextField(
-        value = content,
-        onValueChange =updateContent,
+        value = content.contenido,
+        onValueChange = {updateContent(content.copy(contenido = it))},
         label={ Text(text = "Descripcion")},
         modifier = modifier
             .fillMaxWidth()
             .fillMaxHeight()
     )
 }
-
+/*
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun name(
+    title: NewTareaViewModel.DoesDetails,
+    updateName: (NewTareaViewModel.DoesDetails) -> Unit,
+    modifier: Modifier){
+    TextField(
+        value = title.titulo,
+        onValueChange = { updateName(title.copy(titulo = it)) },
+        label = { Text(text = "Nombre tarea")},
+        textStyle=MaterialTheme.typography.headlineMedium,
+        modifier = modifier
+            .fillMaxWidth()
+    )
+}
+*/
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun startDate(newTareaViewModel: NewTareaViewModel, modifier: Modifier){

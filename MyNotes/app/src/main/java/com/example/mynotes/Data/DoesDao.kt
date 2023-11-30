@@ -12,17 +12,17 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface DoesDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insert(item: Does)
+    suspend fun insert(item: DoesOb)
 
     @Update
-    suspend fun update(item: Does)
+    suspend fun update(item: DoesOb)
 
     @Delete
-    suspend fun delete(item: Does)
+    suspend fun delete(item: DoesOb)
 
-    @Query("SELECT * from tareas WHERE id = :id")
-    fun getItem(id: Int): Flow<Does>
+    @Query("SELECT * from Tareas WHERE id = :id")
+    fun getItem(id: Int): Flow<DoesOb>
 
-    @Query("SELECT * from tareas ORDER BY title ASC")
-    fun getAllItems(): Flow<List<Does>>
+    @Query("SELECT * from Tareas ORDER BY title ASC")
+    fun getAllItems(): Flow<List<DoesOb>>
 }

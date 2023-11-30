@@ -12,17 +12,17 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface NotesDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insert(item: Notes)
+    suspend fun insert(item: NotesOb)
 
     @Update
-    suspend fun update(item: Notes)
+    suspend fun update(item: NotesOb)
 
     @Delete
-    suspend fun delete(item: Notes)
+    suspend fun delete(item: NotesOb)
 
-    @Query("SELECT * from notas WHERE id = :id")
-    fun getItem(id: Int): Flow<Notes>
+    @Query("SELECT * from Notas WHERE id=:idVal ORDER BY title ASC")
+    fun getItem(idVal: Int): Flow<NotesOb>
 
-    @Query("SELECT * from notas ORDER BY title ASC")
-    fun getAllItems(): Flow<List<Notes>>
+    @Query("SELECT * from Notas ORDER BY title ASC")
+    fun getAllItems(): Flow<List<NotesOb>>
 }

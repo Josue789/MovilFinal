@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.AttachFile
@@ -78,13 +80,13 @@ class NewNote : ComponentActivity() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun name(
-    name: String,
-    changeName: (String) ->Unit,
+    name: NewNoteViewModel.ItemDetails,
+    changeName:  (NewNoteViewModel.ItemDetails) -> Unit,
     modifier : Modifier=Modifier
 ){
     TextField(
-        value = name,
-        onValueChange = changeName,
+        value = name.titulo,
+        onValueChange = {changeName(name.copy(titulo = it))},
         label = { Text(text = "Nombre Nota")},
         textStyle=MaterialTheme.typography.headlineMedium,
 
@@ -96,13 +98,13 @@ private fun name(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun content(
-    content: String,
-    changeContent: (String) ->Unit,
+    content: NewNoteViewModel.ItemDetails,
+    changeContent:  (NewNoteViewModel.ItemDetails) -> Unit,
     modifier : Modifier=Modifier
 ){
     TextField(
-        value = content,
-        onValueChange =changeContent,
+        value = content.contenido,
+        onValueChange = {changeContent(content.copy(contenido = it))},
         label={ Text(text = "Descripcion")},
         modifier = modifier
             .fillMaxWidth()
@@ -115,9 +117,10 @@ private fun content(
 @Composable
 fun Greeting4(
     navHostController: NavHostController,
-    newNoteViewModel: NewNoteViewModel = viewModel(),
+    newNoteViewModel: NewNoteViewModel = viewModel(factory = AppViewModelProvider.Factory),
     modifier: Modifier = Modifier) {
     val sheetState = rememberModalBottomSheetState()
+    val coroutineScope = rememberCoroutineScope()
     val scope = rememberCoroutineScope()
     var showBottomSheet by remember { mutableStateOf(false) }
     Scaffold (
@@ -133,7 +136,12 @@ fun Greeting4(
                 title = {},
                 actions = {
                     IconButton(
-                        onClick = { /*TODO*/ }) {
+                        onClick = {
+                            coroutineScope.launch {
+                                newNoteViewModel.saveItem()
+                                navHostController.popBackStack()
+                            }
+                        }) {
                         Icon(Icons.Filled.Check, contentDescription = "done")
                     }
                 }
@@ -195,8 +203,8 @@ fun Greeting4(
             verticalArrangement = Arrangement.spacedBy(10.dp),
             modifier = modifier
                 .padding(contentPadding)) {
-            name(name = newNoteViewModel.inputName, changeName = {newNoteViewModel.updateName(it)})
-            content(content = newNoteViewModel.inputContent, changeContent = {newNoteViewModel.updateContent(it)})
+            name(name = newNoteViewModel.itemUiState.itemDetails, changeName = newNoteViewModel::updateUiState)
+            content(content = newNoteViewModel.itemUiState.itemDetails, changeContent = newNoteViewModel::updateUiState)
         }
     }
 }

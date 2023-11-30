@@ -2,14 +2,13 @@ package com.example.mynotes.Data
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import java.util.Date
 
 @Entity(tableName = "Tareas")
-data class Does(
+data class DoesOb(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
     val title: String,
-    val date: Date,
-    val dateEnd: Date,
+    val date: String,
+    val dateEnd: String,
     val description: String,
 )

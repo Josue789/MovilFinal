@@ -2,15 +2,15 @@ package com.example.mynotes.Data
 
 import kotlinx.coroutines.flow.Flow
 
-abstract class OfflineNotesRepository(private val NotesDao: NotesDao): NotesRepository {
-    fun getAllNotessStream(): Flow<List<Notes>> = NotesDao.getAllItems()
+class OfflineNotesRepository(private val notesDao: NotesDao): NotesRepository {
+    override fun getAllItemsStream(): Flow<List<NotesOb>>  = notesDao.getAllItems()
 
-    fun getNotesStream(id: Int): Flow<Notes?> = NotesDao.getItem(id)
+    override fun getItemStream(id: Int): Flow<NotesOb?> = notesDao.getItem(id)
 
-    suspend fun insertNotes(Notes: Notes) = NotesDao.insert(Notes)
+    override suspend fun insertItem(item: NotesOb) = notesDao.insert(item)
 
-    suspend fun deleteNotes(Notes: Notes) = NotesDao.delete(Notes)
+    override suspend fun deleteItem(item: NotesOb) = notesDao.delete(item)
 
-    suspend fun updateNotes(Notes: Notes) = NotesDao.update(Notes)
+    override suspend fun updateItem(item: NotesOb) = notesDao.update(item)
 
 }

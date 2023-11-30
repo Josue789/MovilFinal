@@ -2,15 +2,17 @@ package com.example.mynotes.Data
 
 import kotlinx.coroutines.flow.Flow
 
-abstract class OfflineDoesRepository(private val DoesDao: DoesDao): DoesRepository {
-    fun getAllDoessStream(): Flow<List<Does>> = DoesDao.getAllItems()
+class OfflineDoesRepository(private val DoesDao: DoesDao): DoesRepository {
 
-    fun getDoesStream(id: Int): Flow<Does?> = DoesDao.getItem(id)
+    suspend fun updateDoes(item: DoesOb) = DoesDao.update(item)
+    override fun getAllItemsStream(): Flow<List<DoesOb>> = DoesDao.getAllItems()
 
-    suspend fun insertDoes(Does: Does) = DoesDao.insert(Does)
+    override fun getItemStream(id: Int): Flow<DoesOb?> = DoesDao.getItem(id)
 
-    suspend fun deleteDoes(Does: Does) = DoesDao.delete(Does)
+    override suspend fun insertItem(item: DoesOb) = DoesDao.insert(item)
 
-    suspend fun updateDoes(Does: Does) = DoesDao.update(Does)
+    override suspend fun deleteItem(item: DoesOb) = DoesDao.delete(item)
+
+    override suspend fun updateItem(item: DoesOb) = DoesDao.update(item)
 
 }
