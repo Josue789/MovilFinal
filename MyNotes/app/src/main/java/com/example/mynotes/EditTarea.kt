@@ -61,11 +61,15 @@ import java.util.Calendar
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.mynotes.Navigation.Screens
 import com.example.mynotes.ViewModel.DoesDetails
+import com.example.mynotes.ViewModel.EditarTareaViewModel
 import com.example.mynotes.ViewModel.NewNoteViewModel
 import kotlinx.coroutines.launch
 import java.util.Date
-
-class NewTarea : ComponentActivity() {
+object EditTareaDestination {
+    const val tareaIdArg = "itemId"
+    val routeWithArgs = "edittarea/{$tareaIdArg}"
+}
+class EditTarea : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -75,7 +79,7 @@ class NewTarea : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    Greeting5(navHostController = rememberNavController())
+                    EditTareaForm(navHostController = rememberNavController())
                 }
             }
         }
@@ -84,8 +88,8 @@ class NewTarea : ComponentActivity() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Greeting5(navHostController: NavHostController,
-              newTareaViewModel: NewTareaViewModel = viewModel(factory = AppViewModelProvider.Factory),
+fun EditTareaForm(navHostController: NavHostController,
+              newTareaViewModel: EditarTareaViewModel = viewModel(factory = AppViewModelProvider.Factory),
               modifier: Modifier = Modifier) {
 
     val sheetState = rememberModalBottomSheetState()
@@ -106,7 +110,7 @@ fun Greeting5(navHostController: NavHostController,
                     IconButton(
                         onClick = {
                             coroutineScope.launch {
-                                newTareaViewModel.saveItem()
+                                newTareaViewModel.updateItem()
                                 navHostController.popBackStack()
                             }
                         }) {
@@ -170,14 +174,14 @@ fun Greeting5(navHostController: NavHostController,
                 .padding(contentPadding)) {
 
             name(
-                title = newTareaViewModel.doesUiState.doesDetails,
+                title = newTareaViewModel.itemUiState.doesDetails,
                 updateName = newTareaViewModel::updateUiState,
                 modifier = modifier)
 
             Row(modifier = modifier
                 .fillMaxWidth()){
                 startDate(
-                    start = newTareaViewModel.doesUiState.doesDetails,
+                    start = newTareaViewModel.itemUiState.doesDetails,
                     updateStart = newTareaViewModel::updateUiState,
                     newTareaViewModel = newTareaViewModel ,
                     modifier = Modifier)
@@ -186,14 +190,14 @@ fun Greeting5(navHostController: NavHostController,
             Row(modifier = modifier
                 .fillMaxWidth()){
                 endDate(
-                    end = newTareaViewModel.doesUiState.doesDetails,
+                    end = newTareaViewModel.itemUiState.doesDetails,
                     updateEnd = newTareaViewModel::updateUiState,
                     newTareaViewModel = newTareaViewModel ,
                     modifier = Modifier)
 
             }
             content(
-                content = newTareaViewModel.doesUiState.doesDetails,
+                content = newTareaViewModel.itemUiState.doesDetails,
                 updateContent =  newTareaViewModel::updateUiState,
                 modifier = Modifier
             )
@@ -253,7 +257,7 @@ private fun name(
 private fun startDate(
     start: DoesDetails ,
     updateStart: (DoesDetails) -> Unit,
-    newTareaViewModel: NewTareaViewModel,
+    newTareaViewModel: EditarTareaViewModel,
     modifier: Modifier){
     val context = LocalContext.current
     val calendar = Calendar.getInstance()
@@ -294,7 +298,7 @@ private fun startDate(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun endDate(
-    newTareaViewModel: NewTareaViewModel,
+    newTareaViewModel: EditarTareaViewModel,
     end: DoesDetails ,
     updateEnd: (DoesDetails) -> Unit,
     modifier: Modifier){
@@ -336,7 +340,7 @@ private fun endDate(
 
 @Preview(showBackground = true)
 @Composable
-fun GreetingPreview5() {
+fun EditTareaForm() {
     MyNotesTheme {
         Greeting5(navHostController = rememberNavController())
     }

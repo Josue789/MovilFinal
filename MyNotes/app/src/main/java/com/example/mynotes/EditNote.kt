@@ -57,10 +57,14 @@ import com.example.mynotes.ui.theme.MyNotesTheme
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.Navigation
 import com.example.mynotes.Navigation.Screens
+import com.example.mynotes.ViewModel.EditNoteViewModel
 import com.example.mynotes.ViewModel.ItemDetails
 import kotlinx.coroutines.launch
-
-class NewNote : ComponentActivity() {
+object EditNoteDestination {
+    const val itemIdArg = "itemId"
+    val routeWithArgs = "editnote/{$itemIdArg}"
+}
+class EditNote : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -70,7 +74,7 @@ class NewNote : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    Greeting4(navHostController = rememberNavController()
+                    EditNoteForm(navHostController = rememberNavController()
                     )
                 }
             }
@@ -116,9 +120,9 @@ private fun content(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Greeting4(
+fun EditNoteForm(
     navHostController: NavHostController,
-    newNoteViewModel: NewNoteViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    newNoteViewModel: EditNoteViewModel = viewModel(factory = AppViewModelProvider.Factory),
     modifier: Modifier = Modifier) {
 
     val sheetState = rememberModalBottomSheetState()
@@ -140,7 +144,7 @@ fun Greeting4(
                     IconButton(
                         onClick = {
                             coroutineScope.launch {
-                                newNoteViewModel.saveItem()
+                                newNoteViewModel.updateItem()
                                 navHostController.popBackStack()
                             }
                         }) {
@@ -214,7 +218,7 @@ fun Greeting4(
 
 @Preview(showBackground = true)
 @Composable
-fun GreetingPreview4() {
+fun EditNoteForm() {
     MyNotesTheme {
         Greeting4(navHostController = rememberNavController()
         )

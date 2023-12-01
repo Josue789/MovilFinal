@@ -233,7 +233,7 @@ fun tarjetaTarea(item: DoesOb,viewModel: TareaViewModel, navController: NavContr
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         modifier = Modifier
             .padding(horizontal = 16.dp, vertical = 8.dp)
-            .clickable { navController.navigate(Screens.NewNotaScreen.route) }
+            .clickable { navController.navigate("edittarea/${item.id}") }
     ) {
         Row(
             modifier = Modifier

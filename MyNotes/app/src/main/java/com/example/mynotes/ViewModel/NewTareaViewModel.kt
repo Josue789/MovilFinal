@@ -27,7 +27,7 @@ class NewTareaViewModel (private val itemsRepository: DoesRepository): ViewModel
     }
     fun updateUiState(doesDetails: DoesDetails) {
         doesUiState =
-            NewTareaViewModel.DoesUiState(doesDetails = doesDetails)
+            DoesUiState(doesDetails = doesDetails)
     }
 
     var name by mutableStateOf("")
@@ -54,26 +54,32 @@ class NewTareaViewModel (private val itemsRepository: DoesRepository): ViewModel
     fun updateContent(it: String) {
         content = it
     }
-
-    data class DoesUiState(
-        val doesDetails: DoesDetails = DoesDetails(),
-    )
-
-    fun DoesDetails.toItem(): DoesOb = DoesOb(
-        id = id,
-        title = titulo,
-        description = contenido,
-        date = start,
-        dateEnd = end
-    )
-    data class DoesDetails(
-        val id: Int = 0,
-        val titulo: String = "",
-        val contenido: String = "",
-        val start: String="",
-        val end: String=""
-
-    )
-
-
 }
+fun DoesOb.toItemUiState(): DoesUiState = DoesUiState(
+    doesDetails = this.toItemDetails()
+)
+fun DoesOb.toItemDetails(): DoesDetails = DoesDetails(
+    id = id,
+    titulo = title,
+    contenido = description,
+    start = date,
+    end = dateEnd
+)
+fun DoesDetails.toItem(): DoesOb = DoesOb(
+    id = id,
+    title = titulo,
+    description = contenido,
+    date = start,
+    dateEnd = end
+)
+data class DoesUiState(
+    val doesDetails: DoesDetails = DoesDetails(),
+)
+data class DoesDetails(
+    val id: Int = 0,
+    val titulo: String = "",
+    val contenido: String = "",
+    val start: String="",
+    val end: String=""
+
+)

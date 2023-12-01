@@ -39,19 +39,25 @@ class NewNoteViewModel(private val itemsRepository: NotesRepository): ViewModel(
     fun updateContent(it: String) {
         inputContent = it
     }
-
-    data class ItemUiState(
-        val itemDetails: ItemDetails = ItemDetails()
-    )
-
-    fun ItemDetails.toItem(): NotesOb = NotesOb(
-        id = id,
-        title = titulo,
-        description = contenido
-    )
-    data class ItemDetails(
-        val id: Int = 0,
-        val titulo: String = "",
-        val contenido: String = ""
-    )
 }
+fun NotesOb.toItemUiState(): ItemUiState = ItemUiState(
+    itemDetails = this.toItemDetails()
+)
+fun NotesOb.toItemDetails(): ItemDetails = ItemDetails(
+    id = id,
+    titulo = title,
+    contenido = description
+)
+fun ItemDetails.toItem(): NotesOb = NotesOb(
+    id = id,
+    title = titulo,
+    description = contenido
+)
+data class ItemUiState(
+    val itemDetails: ItemDetails = ItemDetails()
+)
+data class ItemDetails(
+    val id: Int = 0,
+    val titulo: String = "",
+    val contenido: String = ""
+)

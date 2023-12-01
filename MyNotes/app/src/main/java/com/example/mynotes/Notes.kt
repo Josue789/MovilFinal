@@ -298,7 +298,7 @@ fun tarjetaNota(item: NotesOb,viewModel: NoteViewModel, navController: NavContro
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         modifier = Modifier
             .padding(horizontal = 16.dp, vertical = 8.dp)
-            .clickable { navController.navigate(Screens.NewNotaScreen.route,)  }
+            .clickable { navController.navigate("editnote/${item.id}")  }
     ) {
         Row(
             modifier = Modifier

@@ -6,6 +6,8 @@ import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.mynotes.App.NotesApplication
+import com.example.mynotes.ViewModel.EditNoteViewModel
+import com.example.mynotes.ViewModel.EditarTareaViewModel
 import com.example.mynotes.ViewModel.NewNoteViewModel
 import com.example.mynotes.ViewModel.NewTareaViewModel
 import com.example.mynotes.ViewModel.NoteViewModel
@@ -27,6 +29,13 @@ object AppViewModelProvider {
         initializer {
             TareaViewModel(NotesApplication().container.doesRepository)
         }
+        initializer {
+            EditNoteViewModel(this.createSavedStateHandle(),NotesApplication().container.itemsRepository)
+        }
+        initializer {
+            EditarTareaViewModel(this.createSavedStateHandle(),NotesApplication().container.doesRepository)
+        }
+
 
     }
 }
