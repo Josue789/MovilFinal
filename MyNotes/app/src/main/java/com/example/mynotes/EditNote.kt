@@ -1,6 +1,8 @@
 package com.example.mynotes
 
+import android.content.Intent
 import android.os.Bundle
+import android.provider.MediaStore
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Arrangement
@@ -22,6 +24,7 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.FileOpen
 import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Videocam
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -46,6 +49,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
@@ -177,30 +181,66 @@ fun EditNoteForm(
                 sheetState = sheetState
             ) {
                 // Sheet content
+                val context = LocalContext.current
 
-                TextButton(onClick = { /*TODO*/ }) {
+                //Boton de Fotos
+                TextButton(onClick = {
+                    val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+                    if (intent.resolveActivity(context.packageManager) != null) {
+                        context.startActivity(intent)
+                    }
+                }) {
                     Row(
                         modifier = modifier.fillMaxWidth()
                     ) {
                         Icon(Icons.Filled.CameraAlt, contentDescription = "Photo")
-                        Text(text = "Foto/Imagen")
-                    }
-                }
-                TextButton(onClick = { /*TODO*/ }) {
-                    Row(
-                        modifier = modifier.fillMaxWidth()
-                    ) {
-                        Icon(Icons.Filled.Mic, contentDescription = "Photo")
-                        Text(text = "Audio")
+                        Text(text = " Foto")
                     }
                 }
 
-                TextButton(onClick = { /*TODO*/ }) {
+                //Boton de Video
+                TextButton(onClick = {
+                    val intent = Intent(MediaStore.ACTION_VIDEO_CAPTURE)
+                    if (intent.resolveActivity(context.packageManager) != null) {
+                        context.startActivity(intent)
+                    }
+                }) {
                     Row(
                         modifier = modifier.fillMaxWidth()
                     ) {
-                        Icon(Icons.Filled.FileOpen, contentDescription = "Photo")
-                        Text(text = "Documento")
+                        Icon(Icons.Filled.Videocam, contentDescription = "Video")
+                        Text(text = " Video")
+                    }
+                }
+
+                //Boton de Audio
+                TextButton(onClick = {
+                    val intent = Intent(MediaStore.Audio.Media.RECORD_SOUND_ACTION)
+                    if (intent.resolveActivity(context.packageManager) != null) {
+                        context.startActivity(intent)
+                    }
+                }) {
+                    Row(
+                        modifier = modifier.fillMaxWidth()
+                    ) {
+                        Icon(Icons.Filled.Mic, contentDescription = "Audio")
+                        Text(text = " Audio")
+                    }
+                }
+
+                //Boton de Documentos
+                TextButton(onClick = {
+                    val intent = Intent(Intent.ACTION_GET_CONTENT)
+                    intent.type = "*/*"
+                    if (intent.resolveActivity(context.packageManager) != null) {
+                        context.startActivity(intent)
+                    }
+                }) {
+                    Row(
+                        modifier = modifier.fillMaxWidth()
+                    ) {
+                        Icon(Icons.Filled.FileOpen, contentDescription = "Document")
+                        Text(text = " Documentos")
                     }
                 }
             }
