@@ -1,12 +1,21 @@
 package com.example.mynotes
 
+import android.annotation.SuppressLint
+import android.app.AlarmManager
 import android.app.DatePickerDialog
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
+import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
+import android.provider.Settings.Global.getString
 import android.widget.DatePicker
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -44,6 +53,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -54,6 +64,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -63,6 +75,8 @@ import com.example.mynotes.ui.theme.MyNotesTheme
 import java.util.Calendar
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.mynotes.Navigation.Screens
+import com.example.mynotes.Notifications.createChannelNotification
+import com.example.mynotes.Notifications.workAlarm
 import com.example.mynotes.ViewModel.DoesDetails
 import com.example.mynotes.ViewModel.NewNoteViewModel
 import kotlinx.coroutines.launch
@@ -85,16 +99,26 @@ class NewTarea : ComponentActivity() {
     }
 }
 
+
+
+
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Greeting5(navHostController: NavHostController,
               newTareaViewModel: NewTareaViewModel = viewModel(factory = AppViewModelProvider.Factory),
               modifier: Modifier = Modifier) {
-
+    val context = LocalContext.current
     val sheetState = rememberModalBottomSheetState()
     val coroutineScope = rememberCoroutineScope()
+    val idCanal = "CanalTareas"
     val scope = rememberCoroutineScope()
+    val item = newTareaViewModel.doesUiState.doesDetails
     var showBottomSheet by remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit){
+        createChannelNotification(idCanal,context)
+    }
     Scaffold (
         modifier = Modifier,
         topBar={
@@ -108,6 +132,13 @@ fun Greeting5(navHostController: NavHostController,
                 actions = {
                     IconButton(
                         onClick = {
+                            workAlarm(
+                                context = context,
+                                title = item.titulo,
+                                longDesc = item.contenido,
+                                fchEnd = item.end,
+                                time = 5000
+                            )
                             coroutineScope.launch {
                                 newTareaViewModel.saveItem()
                                 navHostController.popBackStack()
