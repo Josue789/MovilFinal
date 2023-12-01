@@ -20,8 +20,8 @@ interface DoesDao {
     @Delete
     suspend fun delete(item: DoesOb)
 
-    @Query("SELECT * from Tareas WHERE id = :id")
-    fun getItem(id: Int): Flow<DoesOb>
+    @Query("SELECT * from Tareas WHERE id=:idVal ORDER BY title ASC")
+    fun getItem(idVal: Int): Flow<DoesOb>
 
     @Query("SELECT * from Tareas ORDER BY title ASC")
     fun getAllItems(): Flow<List<DoesOb>>

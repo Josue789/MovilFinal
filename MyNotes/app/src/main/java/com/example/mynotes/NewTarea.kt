@@ -84,7 +84,7 @@ class NewTarea : ComponentActivity() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Greeting5(navHostController: NavHostController,
-              newTareaViewModel: NewTareaViewModel = viewModel(),
+              newTareaViewModel: NewTareaViewModel = viewModel(factory = AppViewModelProvider.Factory),
               modifier: Modifier = Modifier) {
 
     val sheetState = rememberModalBottomSheetState()
@@ -168,10 +168,16 @@ fun Greeting5(navHostController: NavHostController,
             modifier = modifier
                 .padding(contentPadding)) {
 
-            name(title = newTareaViewModel.doesUiState.doesDetails, updateName = newTareaViewModel::updateUiState, modifier = modifier)
+            name(
+                title = newTareaViewModel.doesUiState.doesDetails,
+                updateName = newTareaViewModel::updateUiState,
+                modifier = modifier)
+
             Row(modifier = modifier
                 .fillMaxWidth()){
                 startDate(
+                    start = newTareaViewModel.doesUiState.doesDetails,
+                    updateStart = newTareaViewModel::updateUiState,
                     newTareaViewModel = newTareaViewModel ,
                     modifier = Modifier)
 
@@ -179,6 +185,8 @@ fun Greeting5(navHostController: NavHostController,
             Row(modifier = modifier
                 .fillMaxWidth()){
                 endDate(
+                    end = newTareaViewModel.doesUiState.doesDetails,
+                    updateEnd = newTareaViewModel::updateUiState,
                     newTareaViewModel = newTareaViewModel ,
                     modifier = Modifier)
 
@@ -241,7 +249,11 @@ private fun name(
 */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun startDate(newTareaViewModel: NewTareaViewModel, modifier: Modifier){
+private fun startDate(
+    start: NewTareaViewModel.DoesDetails ,
+    updateStart: (NewTareaViewModel.DoesDetails) -> Unit,
+    newTareaViewModel: NewTareaViewModel,
+    modifier: Modifier){
     val context = LocalContext.current
     val calendar = Calendar.getInstance()
 
@@ -253,16 +265,17 @@ private fun startDate(newTareaViewModel: NewTareaViewModel, modifier: Modifier){
     val datePicker = DatePickerDialog(
         context,
         { _: DatePicker, selectedYear: Int, selectedMonth: Int, selectedDayOfMonth: Int ->
-            newTareaViewModel.updateStart("$selectedDayOfMonth/${selectedMonth + 1}/$selectedYear")
+            //newTareaViewModel.updateStart("$selectedDayOfMonth/${selectedMonth + 1}/$selectedYear")
+            updateStart(start.copy(start="$selectedDayOfMonth/${selectedMonth + 1}/$selectedYear"))
         }, year, month, dayOfMonth
     )
     TextField(
-        value = if (newTareaViewModel.start.isNotEmpty()) {
-            newTareaViewModel.start
+        value = if (start.start.isNotEmpty()) {
+            start.start
         } else {
             "dd/mm/aaaa"
         },
-        onValueChange = {newTareaViewModel.updateStart(it)},
+        onValueChange = {updateStart(start.copy(start=it))},
         readOnly = true,
         modifier = Modifier.fillMaxWidth(),
         trailingIcon = {
@@ -279,7 +292,11 @@ private fun startDate(newTareaViewModel: NewTareaViewModel, modifier: Modifier){
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun endDate(newTareaViewModel: NewTareaViewModel, modifier: Modifier){
+private fun endDate(
+    newTareaViewModel: NewTareaViewModel,
+    end: NewTareaViewModel.DoesDetails ,
+    updateEnd: (NewTareaViewModel.DoesDetails) -> Unit,
+    modifier: Modifier){
     val context = LocalContext.current
     val calendar = Calendar.getInstance()
 
@@ -291,16 +308,17 @@ private fun endDate(newTareaViewModel: NewTareaViewModel, modifier: Modifier){
     val datePicker = DatePickerDialog(
         context,
         { _: DatePicker, selectedYear: Int, selectedMonth: Int, selectedDayOfMonth: Int ->
-            newTareaViewModel.updateEnd("$selectedDayOfMonth/${selectedMonth + 1}/$selectedYear")
+            //newTareaViewModel.updateEnd("$selectedDayOfMonth/${selectedMonth + 1}/$selectedYear")
+            updateEnd(end.copy(end="$selectedDayOfMonth/${selectedMonth+1}/$selectedYear"))
         }, year, month, dayOfMonth
     )
     TextField(
-        value = if (newTareaViewModel.end.isNotEmpty()) {
-            newTareaViewModel.end
+        value = if (end.end.isNotEmpty()) {
+            end.end
         } else {
             "dd/mm/aaaa"
         },
-        onValueChange = {newTareaViewModel.updateStart(it)},
+        onValueChange = {updateEnd(end.copy(end=it))},
         readOnly = true,
         modifier = Modifier.fillMaxWidth(),
         trailingIcon = {

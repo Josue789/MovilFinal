@@ -172,7 +172,12 @@ fun Greeting2(navHostController: NavHostController, noteViewModel:NoteViewModel 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun contenidoPrincipal(contentPadding: PaddingValues = PaddingValues(0.dp), itemList: List<NotesOb>, viewModel: NoteViewModel, navController: NavController){
+fun contenidoPrincipal(
+    contentPadding: PaddingValues = PaddingValues(0.dp),
+    itemList: List<NotesOb>,
+    viewModel: NoteViewModel,
+    navController: NavController){
+
     val itemList: List<NotesOb> = itemList
     if (itemList.isEmpty()) {
 

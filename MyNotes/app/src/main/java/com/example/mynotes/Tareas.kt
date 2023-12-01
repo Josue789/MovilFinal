@@ -66,6 +66,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.mynotes.Data.DoesOb
 import com.example.mynotes.Data.InventoryDoesDatabase
+import com.example.mynotes.Data.NotesOb
 import com.example.mynotes.Navigation.Screens
 import com.example.mynotes.ViewModel.TareaViewModel
 import com.example.mynotes.ui.theme.MyNotesTheme
@@ -94,8 +95,11 @@ class Tareas : ComponentActivity() {
 @Composable
 fun Greeting3(navHostController: NavHostController, tareaViewModel: TareaViewModel = viewModel(factory = AppViewModelProvider.Factory),
               modifier: Modifier = Modifier) {
+    val homeUiState by tareaViewModel.homeUiState.collectAsState()
+    val NoteUiState by tareaViewModel.uiState.collectAsState()
+
     val db = InventoryDoesDatabase.getDatabase(LocalContext.current)
-    val listItems = db.itemDao().getAllItems()
+    //val listItems = db.itemDao().getAllItems()
     Scaffold(
         topBar = {
 
@@ -108,7 +112,7 @@ fun Greeting3(navHostController: NavHostController, tareaViewModel: TareaViewMod
                 }
             )
         },
-        content = {contenidoPrincipalTareas(contentPadding = it, itemList = listItems, viewModel =tareaViewModel, navController =navHostController)}
+        content = {contenidoPrincipalTareas(contentPadding = it, itemList = homeUiState.itemList, viewModel =tareaViewModel, navController =navHostController)}
         ,
         bottomBar  ={
             BottomAppBar(
@@ -126,7 +130,6 @@ fun Greeting3(navHostController: NavHostController, tareaViewModel: TareaViewMod
                             )
                             Text(text = "Notas")
                         }
-
                     }
                     IconButton(
                         onClick = { /* do something */ },
@@ -183,9 +186,14 @@ private fun BarraBusqueda(search: String,onSearch: (String) -> Unit)  {
     }
 }
 @Composable
-fun contenidoPrincipalTareas(contentPadding: PaddingValues = PaddingValues(0.dp), itemList: Flow<List<DoesOb>>, viewModel: TareaViewModel, navController: NavController){
-    val flowState by itemList.collectAsState(initial = emptyList())
-    if (flowState.isEmpty()) {
+fun contenidoPrincipalTareas(
+    contentPadding: PaddingValues = PaddingValues(0.dp),
+    itemList: List<DoesOb>,
+    viewModel: TareaViewModel,
+    navController: NavController){
+
+    val itemList: List<DoesOb> = itemList
+    if (itemList.isEmpty()){
         Column(
             modifier = Modifier
                 .padding(horizontal = 16.dp)
@@ -193,18 +201,25 @@ fun contenidoPrincipalTareas(contentPadding: PaddingValues = PaddingValues(0.dp)
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "No hay ninguna tarea agregada",
+                text = "No hay ninguna nota agregada",
                 style = MaterialTheme.typography.titleLarge,
             )
         }
-    } else {
-        LazyColumn(
-            modifier = Modifier.padding(top = 12.dp),
-            contentPadding = contentPadding
-        ){
 
-            items(items = flowState, key = {  }) {
-                    item -> tarjetaTarea(item, viewModel, navController)
+    }else{
+        Column(
+            modifier = Modifier
+                .padding(horizontal = 5.dp)
+                .padding(contentPadding),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            LazyColumn(
+                modifier = Modifier.padding(top = 12.dp),
+                contentPadding = contentPadding
+            ){
+                items(items = itemList, key = { it.id }) {
+                        item -> tarjetaTarea(item, viewModel, navController)
+                }
             }
         }
     }
@@ -247,7 +262,7 @@ fun tarjetaTarea(item: DoesOb,viewModel: TareaViewModel, navController: NavContr
                     style = MaterialTheme.typography.bodyLarge
                 )
                 Text(
-                    text = "Fin "+ item.date,
+                    text = "Fin "+ item.dateEnd,
                     overflow= TextOverflow.Ellipsis,
                     maxLines = 1,
                     style = MaterialTheme.typography.bodyLarge
@@ -277,7 +292,7 @@ fun tarjetaTarea(item: DoesOb,viewModel: TareaViewModel, navController: NavContr
                     confirmarEliminacion = {
                         eliminarConfirmaciónrequerida = false
                         coroutineScope.launch {
-                            //viewModel.eliminarTarea(item)
+                            viewModel.eliminarTarea(item)
                         }
                     },
                     cancelarEliminacion = { eliminarConfirmaciónrequerida = false },

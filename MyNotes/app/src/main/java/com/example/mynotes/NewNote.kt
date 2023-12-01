@@ -119,6 +119,7 @@ fun Greeting4(
     navHostController: NavHostController,
     newNoteViewModel: NewNoteViewModel = viewModel(factory = AppViewModelProvider.Factory),
     modifier: Modifier = Modifier) {
+
     val sheetState = rememberModalBottomSheetState()
     val coroutineScope = rememberCoroutineScope()
     val scope = rememberCoroutineScope()

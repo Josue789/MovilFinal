@@ -8,6 +8,8 @@ import com.example.mynotes.Data.DoesOb
 import com.example.mynotes.Data.DoesRepository
 import com.example.mynotes.Data.NotesOb
 import com.example.mynotes.Data.NotesRepository
+import com.example.mynotes.State.NewNoteUiState
+import com.example.mynotes.State.NewTareaUiState
 import com.example.mynotes.State.NoteUiState
 import com.example.mynotes.State.TareaUiState
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,8 +17,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 class NewTareaViewModel (private val itemsRepository: DoesRepository): ViewModel() {
-    private val _uiState= MutableStateFlow(TareaUiState())
-    val uiState: StateFlow<TareaUiState> = _uiState.asStateFlow()
+    private val _uiState= MutableStateFlow(NewTareaUiState())
+    val uiState: StateFlow<NewTareaUiState> = _uiState.asStateFlow()
 
     var doesUiState by mutableStateOf(DoesUiState())
         private set

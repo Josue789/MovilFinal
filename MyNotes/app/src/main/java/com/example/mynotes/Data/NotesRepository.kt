@@ -1,5 +1,6 @@
 package com.example.mynotes.Data
 import kotlinx.coroutines.flow.Flow
+
 interface NotesRepository {
     /**
      * Retrieve all the items from the the given data source.

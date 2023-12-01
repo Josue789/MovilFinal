@@ -15,11 +15,11 @@ abstract class InventoryDoesDatabase : RoomDatabase() {
         private var Instance: InventoryDoesDatabase? = null
 
         fun getDatabase(context: Context): InventoryDoesDatabase {
-            return InventoryDoesDatabase.Instance ?: synchronized(this) {
+            return Instance ?: synchronized(this) {
                 Room.databaseBuilder(context, InventoryDoesDatabase::class.java, "item_database")
                     .allowMainThreadQueries()
                     .build()
-                    .also { InventoryDoesDatabase.Instance = it }
+                    .also { Instance = it }
             }
         }
     }

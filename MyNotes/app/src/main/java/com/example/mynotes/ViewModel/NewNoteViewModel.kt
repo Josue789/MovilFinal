@@ -15,7 +15,6 @@ import kotlinx.coroutines.flow.asStateFlow
 
 class NewNoteViewModel(private val itemsRepository: NotesRepository): ViewModel(){
     private val _uiState= MutableStateFlow(NewNoteUiState())
-
     val uiState: StateFlow<NewNoteUiState> = _uiState.asStateFlow()
     var itemUiState by mutableStateOf(ItemUiState())
         private set
