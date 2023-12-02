@@ -19,13 +19,21 @@ fun workAlarm(
     title: String,
     longDesc: String,
     fchEnd: String,
-    time: Long = 10000
+    hora: Int,
+    minutos: Int
 ){
     val intent = Intent(context, AlarmNotification::class.java)
         .putExtra("title", title)
         .putExtra("desc", longDesc)
-        .putExtra("time",fchEnd)
+        .putExtra("hora",hora)
+        .putExtra("minutos",minutos)
+        .putExtra("fecha",fchEnd)
 
+    val tiempo: Calendar = Calendar.getInstance().apply {
+        timeInMillis = System.currentTimeMillis()
+        set(Calendar.HOUR_OF_DAY,hora)
+        set(Calendar.MINUTE,minutos)
+    }
 
     val pendingIntent = PendingIntent.getBroadcast(
         context,
@@ -36,9 +44,10 @@ fun workAlarm(
 
     val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
-    alarmManager.setExact(
+    alarmManager.setInexactRepeating(
         AlarmManager.RTC_WAKEUP,
-        Calendar.getInstance().timeInMillis + 5000,
+        tiempo.timeInMillis,
+        AlarmManager.INTERVAL_DAY,
         pendingIntent
     )
 }

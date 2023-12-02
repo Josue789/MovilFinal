@@ -4,6 +4,8 @@ import android.app.NotificationManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Notifications
 import androidx.core.app.NotificationCompat
 import com.example.mynotes.R
 
@@ -19,16 +21,15 @@ class AlarmNotification(): BroadcastReceiver() {
 
     private fun createNotification(context: Context, intent: Intent) {
         val title = intent.getStringExtra("title")
-        val desc = intent.getStringExtra("desc")
-        val time = intent.getStringExtra("time")
+        val time = intent.getStringExtra("fecha")
 
         val notificacion = NotificationCompat.Builder(context, "CanalTareas")
-            .setSmallIcon(R.drawable.ic_launcher_background)
+            .setSmallIcon(R.drawable.ic_launcher_foreground)
             .setContentText("Titulo tarea")
-            .setContentText("La tarea $title caduca el dia $time ")
+            .setContentText("La tarea $title caduca el dia $time")
             .setStyle(
                 NotificationCompat.BigTextStyle()
-                    .bigText("La tarea $title caduca el dia $time ")
+                    .bigText("La tarea $title caduca el dia $time")
             )
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .build()

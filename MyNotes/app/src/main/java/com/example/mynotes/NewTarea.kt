@@ -6,6 +6,7 @@ import android.app.DatePickerDialog
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
+import android.app.TimePickerDialog
 import android.content.Context
 import android.content.Intent
 import android.os.Build
@@ -132,12 +133,14 @@ fun Greeting5(navHostController: NavHostController,
                 actions = {
                     IconButton(
                         onClick = {
+                            val strs = item.end.split(":")
                             workAlarm(
                                 context = context,
                                 title = item.titulo,
                                 longDesc = item.contenido,
-                                fchEnd = item.end,
-                                time = 5000
+                                fchEnd = item.start,
+                                hora = strs[0].toInt(),
+                                minutos = strs[1].toInt()
                             )
                             coroutineScope.launch {
                                 newTareaViewModel.saveItem()
@@ -371,30 +374,31 @@ private fun endDate(
     val context = LocalContext.current
     val calendar = Calendar.getInstance()
 
-    // Obtiene el año dias y mes
-    val year = calendar[Calendar.YEAR]
-    val month = calendar[Calendar.MONTH]
-    val dayOfMonth = calendar[Calendar.DAY_OF_MONTH]
+    val hours = calendar[Calendar.HOUR_OF_DAY]
+    val minutes = calendar[Calendar.MINUTE]
 
-    val datePicker = DatePickerDialog(
+    //Listener
+    val listener = TimePickerDialog.OnTimeSetListener{
+            view,hora,minutos ->
+        updateEnd(end.copy(end="$hora:$minutos"))
+    }
+
+    val timePicker = TimePickerDialog(
         context,
-        { _: DatePicker, selectedYear: Int, selectedMonth: Int, selectedDayOfMonth: Int ->
-            //newTareaViewModel.updateEnd("$selectedDayOfMonth/${selectedMonth + 1}/$selectedYear")
-            updateEnd(end.copy(end="$selectedDayOfMonth/${selectedMonth+1}/$selectedYear"))
-        }, year, month, dayOfMonth
+        listener, hours, minutes,true
     )
     TextField(
         value = if (end.end.isNotEmpty()) {
             end.end
         } else {
-            "dd/mm/aaaa"
+            "00:00"
         },
         onValueChange = {updateEnd(end.copy(end=it))},
         readOnly = true,
         modifier = Modifier.fillMaxWidth(),
         trailingIcon = {
             IconButton(onClick = {
-                datePicker.show()
+                timePicker.show()
             }
             ) {
                 Icon(Icons.Filled.Notifications, contentDescription = "")
