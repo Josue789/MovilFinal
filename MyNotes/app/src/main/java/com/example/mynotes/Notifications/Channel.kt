@@ -6,6 +6,7 @@ import android.os.Build
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.LocalContext
+import kotlin.random.Random
 
 fun createChannelNotification(idCanal: String, context: Context) {
     if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){

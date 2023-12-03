@@ -8,12 +8,14 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Notifications
 import androidx.core.app.NotificationCompat
 import com.example.mynotes.R
+import kotlin.random.Random
 
 
 class AlarmNotification(): BroadcastReceiver() {
     companion object {
-        const val NOTIFICACION_ID = 5
+        var NOTIFICACION_ID = Random.nextInt(1,10000)
     }
+
 
     override fun onReceive(context: Context, intent: Intent) {
         createNotification(context,intent)
@@ -25,8 +27,8 @@ class AlarmNotification(): BroadcastReceiver() {
 
         val notificacion = NotificationCompat.Builder(context, "CanalTareas")
             .setSmallIcon(R.drawable.ic_launcher_foreground)
-            .setContentText("Titulo tarea")
-            .setContentText("La tarea $title caduca el dia $time")
+            .setContentTitle("Tarea pendiente")
+            .setContentText("La tarea $title caduca el dia $time ")
             .setStyle(
                 NotificationCompat.BigTextStyle()
                     .bigText("La tarea $title caduca el dia $time")
@@ -36,6 +38,6 @@ class AlarmNotification(): BroadcastReceiver() {
 
         val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-        manager.notify(NOTIFICACION_ID, notificacion)
+        manager.notify(NOTIFICACION_ID++, notificacion)
     }
 }

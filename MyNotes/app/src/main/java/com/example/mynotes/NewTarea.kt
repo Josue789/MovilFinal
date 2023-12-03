@@ -133,15 +133,21 @@ fun Greeting5(navHostController: NavHostController,
                 actions = {
                     IconButton(
                         onClick = {
-                            val strs = item.end.split(":")
-                            workAlarm(
-                                context = context,
-                                title = item.titulo,
-                                longDesc = item.contenido,
-                                fchEnd = item.start,
-                                hora = strs[0].toInt(),
-                                minutos = strs[1].toInt()
-                            )
+                            val all = item.end.split(",")
+                            all.map {
+                                if(it.isNotEmpty()){
+                                    val strs = it.split(":")
+                                    workAlarm(
+                                        context = context,
+                                        title = item.titulo,
+                                        longDesc = item.contenido,
+                                        fchEnd = item.start,
+                                        hora = strs[0].toInt(),
+                                        minutos = strs[1].toInt()
+                                    )
+                                }
+
+                            }
                             coroutineScope.launch {
                                 newTareaViewModel.saveItem()
                                 navHostController.popBackStack()
@@ -371,16 +377,23 @@ private fun endDate(
     end: DoesDetails ,
     updateEnd: (DoesDetails) -> Unit,
     modifier: Modifier){
+    //Experimental (EN CASO DE FALLO ELIMINAR)
+    //var listaNotificaciones: MutableList<String> = mutableListOf()
+    var lineaNotificaciones = end.end
+
+
+    //Obtiene la hora y contexto actual
     val context = LocalContext.current
     val calendar = Calendar.getInstance()
-
     val hours = calendar[Calendar.HOUR_OF_DAY]
     val minutes = calendar[Calendar.MINUTE]
 
     //Listener
     val listener = TimePickerDialog.OnTimeSetListener{
             view,hora,minutos ->
-        updateEnd(end.copy(end="$hora:$minutos"))
+        val text = "$hora:$minutos"
+        lineaNotificaciones += "$hora:$minutos,"
+        updateEnd(end.copy(end=lineaNotificaciones))
     }
 
     val timePicker = TimePickerDialog(
@@ -393,7 +406,7 @@ private fun endDate(
         } else {
             "00:00"
         },
-        onValueChange = {updateEnd(end.copy(end=it))},
+        onValueChange = {updateEnd(end.copy(end=lineaNotificaciones))},
         readOnly = true,
         modifier = Modifier.fillMaxWidth(),
         trailingIcon = {

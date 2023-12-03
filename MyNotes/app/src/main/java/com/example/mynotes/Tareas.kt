@@ -256,13 +256,13 @@ fun tarjetaTarea(item: DoesOb,viewModel: TareaViewModel, navController: NavContr
                     style = MaterialTheme.typography.bodyLarge
                 )
                 Text(
-                    text = "Inicio "+ item.date,
+                    text = "Vence: "+ item.date,
                     overflow= TextOverflow.Ellipsis,
                     maxLines = 1,
                     style = MaterialTheme.typography.bodyLarge
                 )
                 Text(
-                    text = "Fin "+ item.dateEnd,
+                    text = "Recordar: "+ item.dateEnd,
                     overflow= TextOverflow.Ellipsis,
                     maxLines = 1,
                     style = MaterialTheme.typography.bodyLarge
