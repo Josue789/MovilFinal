@@ -66,11 +66,9 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.mynotes.Data.DoesOb
 import com.example.mynotes.Data.InventoryDoesDatabase
-import com.example.mynotes.Data.NotesOb
 import com.example.mynotes.Navigation.Screens
 import com.example.mynotes.ViewModel.TareaViewModel
 import com.example.mynotes.ui.theme.MyNotesTheme
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 
 class Tareas : ComponentActivity() {
@@ -100,6 +98,8 @@ fun Greeting3(navHostController: NavHostController, tareaViewModel: TareaViewMod
 
     val db = InventoryDoesDatabase.getDatabase(LocalContext.current)
     //val listItems = db.itemDao().getAllItems()
+
+
     Scaffold(
         topBar = {
 

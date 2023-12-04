@@ -6,16 +6,13 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.AttachFile
@@ -24,7 +21,6 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.FileOpen
 import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material.icons.filled.Videocam
-import androidx.compose.material3.Card
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
@@ -46,12 +42,9 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
@@ -146,13 +139,18 @@ fun Greeting4(
     var showImage by remember {
         mutableStateOf(false)
     }
+    var listImageTemp by remember {
+        mutableStateOf("")
+    }
 
     val cameraLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.TakePicture()
     ) { success ->
         if (success) {
+
             uri.let {
                 listImageUri = listImageUri + it // Agrega la Uri a la lista
+                listImageTemp += "$it|"
             }
             imageUri = uri
             showImage = !showImage
@@ -178,6 +176,9 @@ fun Greeting4(
     var showVideo by remember {
         mutableStateOf(false)
     }
+    var listVideoTemp by remember {
+        mutableStateOf("")
+    }
 
     val videoLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.CaptureVideo()
@@ -185,6 +186,7 @@ fun Greeting4(
         if (success) {
             uri.let {
                 listVideoUri = listVideoUri + it // Agrega la Uri a la lista
+                listVideoTemp += "$it|"
             }
             videoUri = uri
             showVideo = !showVideo
@@ -211,12 +213,17 @@ fun Greeting4(
         mutableStateOf(false)
     }
 
+    var listAudioTemp by remember {
+        mutableStateOf("")
+    }
+
     val audioPickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent(),
     ) { uri: Uri? ->
         uri?.let {
             // Aquí puedes manejar la URI del archivo seleccionado
             listAudioUri = listAudioUri + it // Agrega la Uri del archivo a la lista
+            listAudioTemp += "$it|"
         }
         audioUri = uri
         showAudio = !showAudio
@@ -375,60 +382,11 @@ fun Greeting4(
     }
 }
 
-@Composable
-fun DialogImages(
-    onDismissRequest: () -> Unit,
-    onConfirmation: () -> Unit,
-    painter: Painter,
-    imageDescription: String,
-) {
-    Dialog(onDismissRequest = { onDismissRequest() }) {
-        // Draw a rectangle shape with rounded corners inside the dialog
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(375.dp)
-                .padding(16.dp),
-            shape = RoundedCornerShape(16.dp),
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize(),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                Image(
-                    painter = painter,
-                    contentDescription = imageDescription,
-                    contentScale = ContentScale.Fit,
-                    modifier = Modifier
-                        .height(160.dp)
-                )
-                Text(
-                    text = "This is a dialog with buttons and an image.",
-                    modifier = Modifier.padding(16.dp),
-                )
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center,
-                ) {
-                    TextButton(
-                        onClick = { onDismissRequest() },
-                        modifier = Modifier.padding(8.dp),
-                    ) {
-                        Text("Dismiss")
-                    }
-                    TextButton(
-                        onClick = { onConfirmation() },
-                        modifier = Modifier.padding(8.dp),
-                    ) {
-                        Text("Confirm")
-                    }
-                }
-            }
-        }
-    }
+fun PrepareUris(content: ItemDetails, changeContent:  (ItemDetails) -> Unit, lists: List<String?>) {
+    changeContent(content.copy(contenido = content.contenido+
+            "->Fotos "+lists[0]+
+            "->Videos "+lists[1]+
+            "->Audios "+lists[2]))
 }
 
 

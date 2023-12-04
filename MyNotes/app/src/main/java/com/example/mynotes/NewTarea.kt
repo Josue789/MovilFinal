@@ -9,13 +9,16 @@ import android.app.PendingIntent
 import android.app.TimePickerDialog
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.provider.Settings.Global.getString
 import android.widget.DatePicker
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -75,6 +78,11 @@ import com.example.mynotes.ViewModel.NewTareaViewModel
 import com.example.mynotes.ui.theme.MyNotesTheme
 import java.util.Calendar
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.mynotes.Multimedia.ComposeProvider
+import com.example.mynotes.Multimedia.DialogShowAudioSelected
+import com.example.mynotes.Multimedia.DialogShowFileSelected
+import com.example.mynotes.Multimedia.DialogShowImageTake
+import com.example.mynotes.Multimedia.DialogShowVideoTake
 import com.example.mynotes.Navigation.Screens
 import com.example.mynotes.Notifications.createChannelNotification
 import com.example.mynotes.Notifications.workAlarm
@@ -117,9 +125,154 @@ fun Greeting5(navHostController: NavHostController,
     val item = newTareaViewModel.doesUiState.doesDetails
     var showBottomSheet by remember { mutableStateOf(false) }
 
+    // multimedia
+    var uri: Uri by remember { mutableStateOf(Uri.EMPTY) }
+
+    // tomar foto INICIO ---------------------------------------------------------------------------
+
+    var imageUri by remember {
+        mutableStateOf<Uri?>(null)
+    }
+    var listImageUri by remember {
+        mutableStateOf(listOf<Uri>())
+    }
+    var showImage by remember {
+        mutableStateOf(false)
+    }
+    var listImageTemp by remember {
+        mutableStateOf("")
+    }
+
+    val cameraLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.TakePicture()
+    ) { success ->
+        if (success) {
+
+            uri.let {
+                listImageUri = listImageUri + it // Agrega la Uri a la lista
+                listImageTemp += "$it|"
+            }
+            imageUri = uri
+            showImage = !showImage
+        }
+    }
+
+    if(showImage){
+        DialogShowImageTake(
+            onDismiss = { showImage = !showImage },
+            imageUri = listImageUri
+        )
+
+    }
+    // tomar foto FIN ------------------------------------------------------------------------------
+
+    // tomar video INICIO --------------------------------------------------------------------------
+    var videoUri by remember {
+        mutableStateOf<Uri?>(null)
+    }
+    var listVideoUri by remember {
+        mutableStateOf(listOf<Uri>())
+    }
+    var showVideo by remember {
+        mutableStateOf(false)
+    }
+    var listVideoTemp by remember {
+        mutableStateOf("")
+    }
+
+    val videoLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.CaptureVideo()
+    ) { success ->
+        if (success) {
+            uri.let {
+                listVideoUri = listVideoUri + it // Agrega la Uri a la lista
+                listVideoTemp += "$it|"
+            }
+            videoUri = uri
+            showVideo = !showVideo
+        }
+    }
+    if(showVideo){
+
+        DialogShowVideoTake(
+            onDismiss = { showVideo = !showVideo },
+            videoUri = listVideoUri
+        )
+    }
+    // tomar video FIN -----------------------------------------------------------------------------
+
+
+    // seleccionar audio INICIO ------------------------------------------------------------------
+    var audioUri by remember {
+        mutableStateOf<Uri?>(null)
+    }
+    var listAudioUri by remember {
+        mutableStateOf(listOf<Uri>())
+    }
+    var showAudio by remember {
+        mutableStateOf(false)
+    }
+
+    var listAudioTemp by remember {
+        mutableStateOf("")
+    }
+
+    val audioPickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent(),
+    ) { uri: Uri? ->
+        uri?.let {
+            // Aquí puedes manejar la URI del archivo seleccionado
+            listAudioUri = listAudioUri + it // Agrega la Uri del archivo a la lista
+            listAudioTemp += "$it|"
+        }
+        audioUri = uri
+        showAudio = !showAudio
+    }
+
+    if(showAudio){
+        DialogShowAudioSelected(
+            onDismiss = { showAudio = !showAudio },
+            fileUri = listAudioUri
+        )
+    }
+    // seleccionar audio FIN ---------------------------------------------------------------------
+
+    // seleccionar audio INICIO ------------------------------------------------------------------
+    var fileUri by remember {
+        mutableStateOf<Uri?>(null)
+    }
+    var listFileUri by remember {
+        mutableStateOf(listOf<Uri>())
+    }
+    var showFile by remember {
+        mutableStateOf(false)
+    }
+
+    val filePickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent(),
+    ) { uri: Uri? ->
+        uri?.let {
+            // Aquí puedes manejar la URI del archivo seleccionado
+            listFileUri = listFileUri + it // Agrega la Uri del archivo a la lista
+        }
+        fileUri = uri
+        showFile = !showFile
+    }
+
+    if(showFile){
+        DialogShowFileSelected(
+            onDismiss = { showFile = !showFile }
+        )
+    }
+    // seleccionar audio FIN ---------------------------------------------------------------------
+
+
+
+    //Crea el canal de notificaciones
     LaunchedEffect(Unit){
         createChannelNotification(idCanal,context)
     }
+
     Scaffold (
         modifier = Modifier,
         topBar={
@@ -183,10 +336,8 @@ fun Greeting5(navHostController: NavHostController,
 
                 //Boton de Fotos
                 TextButton(onClick = {
-                    val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-                    if (intent.resolveActivity(context.packageManager) != null) {
-                        context.startActivity(intent)
-                    }
+                    uri = ComposeProvider.getImageUri(context)
+                    cameraLauncher.launch(uri)
                 }) {
                     Row(
                         modifier = modifier.fillMaxWidth()
@@ -198,10 +349,8 @@ fun Greeting5(navHostController: NavHostController,
 
                 //Boton de Video
                 TextButton(onClick = {
-                    val intent = Intent(MediaStore.ACTION_VIDEO_CAPTURE)
-                    if (intent.resolveActivity(context.packageManager) != null) {
-                        context.startActivity(intent)
-                    }
+                    uri = ComposeProvider.getImageUri(context)
+                    videoLauncher.launch(uri)
                 }) {
                     Row(
                         modifier = modifier.fillMaxWidth()
@@ -213,10 +362,7 @@ fun Greeting5(navHostController: NavHostController,
 
                 //Boton de Audio
                 TextButton(onClick = {
-                    val intent = Intent(MediaStore.Audio.Media.RECORD_SOUND_ACTION)
-                    if (intent.resolveActivity(context.packageManager) != null) {
-                        context.startActivity(intent)
-                    }
+                    audioPickerLauncher.launch("audio/*")
                 }) {
                     Row(
                         modifier = modifier.fillMaxWidth()
@@ -377,8 +523,6 @@ private fun endDate(
     end: DoesDetails ,
     updateEnd: (DoesDetails) -> Unit,
     modifier: Modifier){
-    //Experimental (EN CASO DE FALLO ELIMINAR)
-    //var listaNotificaciones: MutableList<String> = mutableListOf()
     var lineaNotificaciones = end.end
 
 

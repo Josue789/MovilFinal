@@ -1,10 +1,12 @@
 package com.example.mynotes
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
-import android.provider.MediaStore
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,25 +14,17 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.AttachFile
-import androidx.compose.material.icons.filled.Attachment
 import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.FileOpen
 import androidx.compose.material.icons.filled.Mic
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Videocam
-import androidx.compose.material3.BottomAppBar
-import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -52,17 +46,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.example.mynotes.ViewModel.NewNoteViewModel
-import com.example.mynotes.ViewModel.NoteViewModel
-import com.example.mynotes.ui.theme.MyNotesTheme
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.Navigation
+import androidx.room.TypeConverter
+import com.example.mynotes.Multimedia.ComposeProvider
+import com.example.mynotes.Multimedia.DialogShowAudioSelected
+import com.example.mynotes.Multimedia.DialogShowFileSelected
+import com.example.mynotes.Multimedia.DialogShowImageTake
+import com.example.mynotes.Multimedia.DialogShowVideoTake
 import com.example.mynotes.Navigation.Screens
 import com.example.mynotes.ViewModel.EditNoteViewModel
 import com.example.mynotes.ViewModel.ItemDetails
+import com.example.mynotes.ui.theme.MyNotesTheme
 import kotlinx.coroutines.launch
 object EditNoteDestination {
     const val itemIdArg = "itemId"
@@ -133,6 +129,152 @@ fun EditNoteForm(
     val coroutineScope = rememberCoroutineScope()
     val scope = rememberCoroutineScope()
     var showBottomSheet by remember { mutableStateOf(false) }
+
+    // multimedia
+    var uri: Uri by remember { mutableStateOf(Uri.EMPTY) }
+
+    // tomar foto INICIO ---------------------------------------------------------------------------
+
+    var imageUri by remember {
+        mutableStateOf<Uri?>(null)
+    }
+
+    var listImageUri by remember {
+        mutableStateOf(listOf<Uri>())
+    }
+    var showImage by remember {
+        mutableStateOf(false)
+    }
+
+    var listImageTemp by remember {
+        mutableStateOf("")
+    }
+
+    val cameraLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.TakePicture()
+    ) { success ->
+        if (success) {
+
+            uri.let {
+                listImageUri = listImageUri + it // Agrega la Uri a la lista
+                listImageTemp += "$it|"
+            }
+            imageUri = uri
+            showImage = !showImage
+        }
+    }
+
+    if(showImage){
+        DialogShowImageTake(
+            onDismiss = {showImage = !showImage },
+            imageUri = listImageUri)
+    }
+    // tomar foto FIN ------------------------------------------------------------------------------
+
+    // tomar video INICIO --------------------------------------------------------------------------
+    var videoUri by remember {
+        mutableStateOf<Uri?>(null)
+    }
+    var listVideoUri by remember {
+        mutableStateOf(listOf<Uri>())
+    }
+    var showVideo by remember {
+        mutableStateOf(false)
+    }
+    var listVideoTemp by remember {
+        mutableStateOf("")
+    }
+
+    val videoLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.CaptureVideo()
+    ) { success ->
+        if (success) {
+            uri.let {
+                listVideoUri = listVideoUri + it // Agrega la Uri a la lista
+                listVideoTemp += "$it|"
+            }
+            videoUri = uri
+            showVideo = !showVideo
+        }
+    }
+    if(showVideo){
+
+        DialogShowVideoTake(
+            onDismiss = { showVideo = !showVideo },
+            videoUri = listVideoUri
+        )
+    }
+    // tomar video FIN -----------------------------------------------------------------------------
+
+
+    // seleccionar audio INICIO ------------------------------------------------------------------
+    var audioUri by remember {
+        mutableStateOf<Uri?>(null)
+    }
+    var listAudioUri by remember {
+        mutableStateOf(listOf<Uri>())
+    }
+    var showAudio by remember {
+        mutableStateOf(false)
+    }
+
+    var listAudioTemp by remember {
+        mutableStateOf("")
+    }
+
+    val audioPickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent(),
+    ) { uri: Uri? ->
+        uri?.let {
+            // Aquí puedes manejar la URI del archivo seleccionado
+            listAudioUri = listAudioUri + it // Agrega la Uri del archivo a la lista
+            listAudioTemp += "$it|"
+        }
+        audioUri = uri
+        showAudio = !showAudio
+    }
+
+    if(showAudio){
+        DialogShowAudioSelected(
+            onDismiss = { showAudio = !showAudio },
+            fileUri = listAudioUri
+        )
+    }
+    // seleccionar audio FIN ---------------------------------------------------------------------
+
+    // seleccionar audio INICIO ------------------------------------------------------------------
+    var fileUri by remember {
+        mutableStateOf<Uri?>(null)
+    }
+    var listFileUri by remember {
+        mutableStateOf(listOf<Uri>())
+    }
+    var showFile by remember {
+        mutableStateOf(false)
+    }
+
+    val filePickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent(),
+    ) { uri: Uri? ->
+        uri?.let {
+            // Aquí puedes manejar la URI del archivo seleccionado
+            listFileUri = listFileUri + it // Agrega la Uri del archivo a la lista
+        }
+        fileUri = uri
+        showFile = !showFile
+    }
+
+    if(showFile){
+        DialogShowFileSelected(
+            onDismiss = { showFile = !showFile }
+        )
+    }
+    // seleccionar audio FIN ---------------------------------------------------------------------
+
+
+
+
+
     Scaffold (
         modifier = Modifier
             .padding(5.dp),
@@ -185,10 +327,8 @@ fun EditNoteForm(
 
                 //Boton de Fotos
                 TextButton(onClick = {
-                    val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-                    if (intent.resolveActivity(context.packageManager) != null) {
-                        context.startActivity(intent)
-                    }
+                    uri = ComposeProvider.getImageUri(context)
+                    cameraLauncher.launch(uri)
                 }) {
                     Row(
                         modifier = modifier.fillMaxWidth()
@@ -200,10 +340,8 @@ fun EditNoteForm(
 
                 //Boton de Video
                 TextButton(onClick = {
-                    val intent = Intent(MediaStore.ACTION_VIDEO_CAPTURE)
-                    if (intent.resolveActivity(context.packageManager) != null) {
-                        context.startActivity(intent)
-                    }
+                    uri = ComposeProvider.getImageUri(context)
+                    videoLauncher.launch(uri)
                 }) {
                     Row(
                         modifier = modifier.fillMaxWidth()
@@ -215,10 +353,7 @@ fun EditNoteForm(
 
                 //Boton de Audio
                 TextButton(onClick = {
-                    val intent = Intent(MediaStore.Audio.Media.RECORD_SOUND_ACTION)
-                    if (intent.resolveActivity(context.packageManager) != null) {
-                        context.startActivity(intent)
-                    }
+                    audioPickerLauncher.launch("audio/*")
                 }) {
                     Row(
                         modifier = modifier.fillMaxWidth()
@@ -253,6 +388,14 @@ fun EditNoteForm(
             content(content = newNoteViewModel.itemUiState.itemDetails, changeContent = newNoteViewModel::updateUiState)
         }
     }
+}
+
+@TypeConverter
+fun toUriList(uriListString: String?): List<Uri> {
+    if (uriListString != null) {
+        return uriListString.split("|").map { Uri.parse(it) }
+    }
+    return listOf()
 }
 
 

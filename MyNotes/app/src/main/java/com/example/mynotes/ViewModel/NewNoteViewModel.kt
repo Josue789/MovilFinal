@@ -1,6 +1,5 @@
 package com.example.mynotes.ViewModel
 
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -8,7 +7,6 @@ import androidx.lifecycle.ViewModel
 import com.example.mynotes.Data.NotesOb
 import com.example.mynotes.Data.NotesRepository
 import com.example.mynotes.State.NewNoteUiState
-import com.example.mynotes.State.NoteUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -39,6 +37,7 @@ class NewNoteViewModel(private val itemsRepository: NotesRepository): ViewModel(
     fun updateContent(it: String) {
         inputContent = it
     }
+
 }
 fun NotesOb.toItemUiState(): ItemUiState = ItemUiState(
     itemDetails = this.toItemDetails()

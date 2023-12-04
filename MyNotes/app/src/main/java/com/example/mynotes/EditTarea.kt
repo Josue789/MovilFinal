@@ -1,12 +1,18 @@
 package com.example.mynotes
 
 import android.app.DatePickerDialog
+import android.app.TimePickerDialog
 import android.content.Intent
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.widget.DatePicker
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -44,6 +50,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -62,7 +69,14 @@ import com.example.mynotes.ViewModel.NewTareaViewModel
 import com.example.mynotes.ui.theme.MyNotesTheme
 import java.util.Calendar
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.mynotes.Multimedia.ComposeProvider
+import com.example.mynotes.Multimedia.DialogShowAudioSelected
+import com.example.mynotes.Multimedia.DialogShowFileSelected
+import com.example.mynotes.Multimedia.DialogShowImageTake
+import com.example.mynotes.Multimedia.DialogShowVideoTake
 import com.example.mynotes.Navigation.Screens
+import com.example.mynotes.Notifications.createChannelNotification
+import com.example.mynotes.Notifications.workAlarm
 import com.example.mynotes.ViewModel.DoesDetails
 import com.example.mynotes.ViewModel.EditarTareaViewModel
 import com.example.mynotes.ViewModel.NewNoteViewModel
@@ -89,6 +103,7 @@ class EditTarea : ComponentActivity() {
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditTareaForm(navHostController: NavHostController,
@@ -96,9 +111,161 @@ fun EditTareaForm(navHostController: NavHostController,
               modifier: Modifier = Modifier) {
 
     val sheetState = rememberModalBottomSheetState()
+    val idCanal = "CanalTareas"
+    val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     val scope = rememberCoroutineScope()
     var showBottomSheet by remember { mutableStateOf(false) }
+    val aux = newTareaViewModel.itemUiState.doesDetails
+    var AlarmsAdded by remember { mutableStateOf(aux.end) }
+
+
+    // multimedia
+    var uri: Uri by remember { mutableStateOf(Uri.EMPTY) }
+
+    // tomar foto INICIO ---------------------------------------------------------------------------
+
+    var imageUri by remember {
+        mutableStateOf<Uri?>(null)
+    }
+    var listImageUri by remember {
+        mutableStateOf(listOf<Uri>())
+    }
+    var showImage by remember {
+        mutableStateOf(false)
+    }
+    var listImageTemp by remember {
+        mutableStateOf("")
+    }
+
+    val cameraLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.TakePicture()
+    ) { success ->
+        if (success) {
+
+            uri.let {
+                listImageUri = listImageUri + it // Agrega la Uri a la lista
+                listImageTemp += "$it|"
+            }
+            imageUri = uri
+            showImage = !showImage
+        }
+    }
+
+    if(showImage){
+        DialogShowImageTake(
+            onDismiss = { showImage = !showImage },
+            imageUri = listImageUri
+        )
+
+    }
+    // tomar foto FIN ------------------------------------------------------------------------------
+
+    // tomar video INICIO --------------------------------------------------------------------------
+    var videoUri by remember {
+        mutableStateOf<Uri?>(null)
+    }
+    var listVideoUri by remember {
+        mutableStateOf(listOf<Uri>())
+    }
+    var showVideo by remember {
+        mutableStateOf(false)
+    }
+    var listVideoTemp by remember {
+        mutableStateOf("")
+    }
+
+    val videoLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.CaptureVideo()
+    ) { success ->
+        if (success) {
+            uri.let {
+                listVideoUri = listVideoUri + it // Agrega la Uri a la lista
+                listVideoTemp += "$it|"
+            }
+            videoUri = uri
+            showVideo = !showVideo
+        }
+    }
+    if(showVideo){
+
+        DialogShowVideoTake(
+            onDismiss = { showVideo = !showVideo },
+            videoUri = listVideoUri
+        )
+    }
+    // tomar video FIN -----------------------------------------------------------------------------
+
+
+    // seleccionar audio INICIO ------------------------------------------------------------------
+    var audioUri by remember {
+        mutableStateOf<Uri?>(null)
+    }
+    var listAudioUri by remember {
+        mutableStateOf(listOf<Uri>())
+    }
+    var showAudio by remember {
+        mutableStateOf(false)
+    }
+
+    var listAudioTemp by remember {
+        mutableStateOf("")
+    }
+
+    val audioPickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent(),
+    ) { uri: Uri? ->
+        uri?.let {
+            // Aquí puedes manejar la URI del archivo seleccionado
+            listAudioUri = listAudioUri + it // Agrega la Uri del archivo a la lista
+            listAudioTemp += "$it|"
+        }
+        audioUri = uri
+        showAudio = !showAudio
+    }
+
+    if(showAudio){
+        DialogShowAudioSelected(
+            onDismiss = { showAudio = !showAudio },
+            fileUri = listAudioUri
+        )
+    }
+    // seleccionar audio FIN ---------------------------------------------------------------------
+
+    // seleccionar audio INICIO ------------------------------------------------------------------
+    var fileUri by remember {
+        mutableStateOf<Uri?>(null)
+    }
+    var listFileUri by remember {
+        mutableStateOf(listOf<Uri>())
+    }
+    var showFile by remember {
+        mutableStateOf(false)
+    }
+
+    val filePickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent(),
+    ) { uri: Uri? ->
+        uri?.let {
+            // Aquí puedes manejar la URI del archivo seleccionado
+            listFileUri = listFileUri + it // Agrega la Uri del archivo a la lista
+        }
+        fileUri = uri
+        showFile = !showFile
+    }
+
+    if(showFile){
+        DialogShowFileSelected(
+            onDismiss = { showFile = !showFile }
+        )
+    }
+    // seleccionar audio FIN ---------------------------------------------------------------------
+
+    //Crea el canal de notificaciones
+    LaunchedEffect(Unit){
+        createChannelNotification(idCanal,context)
+    }
+
     Scaffold (
         modifier = Modifier,
         topBar={
@@ -112,6 +279,20 @@ fun EditTareaForm(navHostController: NavHostController,
                 actions = {
                     IconButton(
                         onClick = {
+                            val all = aux.end.split(",")
+                            all.map {
+                                if(it.isNotEmpty() && !AlarmsAdded.contains(it)){
+                                    val strs = it.split(":")
+                                    workAlarm(
+                                        context = context,
+                                        title = aux.titulo,
+                                        longDesc = aux.contenido,
+                                        fchEnd = aux.start,
+                                        hora = strs[0].toInt(),
+                                        minutos = strs[1].toInt()
+                                    )
+                                }
+                            }
                             coroutineScope.launch {
                                 newTareaViewModel.updateItem()
                                 navHostController.popBackStack()
@@ -147,10 +328,8 @@ fun EditTareaForm(navHostController: NavHostController,
 
                 //Boton de Fotos
                 TextButton(onClick = {
-                    val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-                    if (intent.resolveActivity(context.packageManager) != null) {
-                        context.startActivity(intent)
-                    }
+                    uri = ComposeProvider.getImageUri(context)
+                    cameraLauncher.launch(uri)
                 }) {
                     Row(
                         modifier = modifier.fillMaxWidth()
@@ -162,10 +341,8 @@ fun EditTareaForm(navHostController: NavHostController,
 
                 //Boton de Video
                 TextButton(onClick = {
-                    val intent = Intent(MediaStore.ACTION_VIDEO_CAPTURE)
-                    if (intent.resolveActivity(context.packageManager) != null) {
-                        context.startActivity(intent)
-                    }
+                    uri = ComposeProvider.getImageUri(context)
+                    videoLauncher.launch(uri)
                 }) {
                     Row(
                         modifier = modifier.fillMaxWidth()
@@ -177,10 +354,7 @@ fun EditTareaForm(navHostController: NavHostController,
 
                 //Boton de Audio
                 TextButton(onClick = {
-                    val intent = Intent(MediaStore.Audio.Media.RECORD_SOUND_ACTION)
-                    if (intent.resolveActivity(context.packageManager) != null) {
-                        context.startActivity(intent)
-                    }
+                    audioPickerLauncher.launch("audio/*")
                 }) {
                     Row(
                         modifier = modifier.fillMaxWidth()
@@ -341,20 +515,25 @@ private fun endDate(
     end: DoesDetails ,
     updateEnd: (DoesDetails) -> Unit,
     modifier: Modifier){
+    var lineaNotificaciones = end.end
+
+    ///Obtiene la hora y contexto actual
     val context = LocalContext.current
     val calendar = Calendar.getInstance()
+    val hours = calendar[Calendar.HOUR_OF_DAY]
+    val minutes = calendar[Calendar.MINUTE]
 
-    // Obtiene el año dias y mes
-    val year = calendar[Calendar.YEAR]
-    val month = calendar[Calendar.MONTH]
-    val dayOfMonth = calendar[Calendar.DAY_OF_MONTH]
+    //Listener
+    val listener = TimePickerDialog.OnTimeSetListener{
+            view,hora,minutos ->
+        val text = "$hora:$minutos"
+        lineaNotificaciones += "$hora:$minutos,"
+        updateEnd(end.copy(end=lineaNotificaciones))
+    }
 
-    val datePicker = DatePickerDialog(
+    val timePicker = TimePickerDialog(
         context,
-        { _: DatePicker, selectedYear: Int, selectedMonth: Int, selectedDayOfMonth: Int ->
-            //newTareaViewModel.updateEnd("$selectedDayOfMonth/${selectedMonth + 1}/$selectedYear")
-            updateEnd(end.copy(end="$selectedDayOfMonth/${selectedMonth+1}/$selectedYear"))
-        }, year, month, dayOfMonth
+        listener, hours, minutes,true
     )
     TextField(
         value = if (end.end.isNotEmpty()) {
@@ -367,7 +546,7 @@ private fun endDate(
         modifier = Modifier.fillMaxWidth(),
         trailingIcon = {
             IconButton(onClick = {
-                datePicker.show()
+                timePicker.show()
             }
             ) {
                 Icon(Icons.Filled.Notifications, contentDescription = "")
