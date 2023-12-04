@@ -53,6 +53,8 @@ android {
 dependencies {
 
     //implementation ("androidx.core:core:2.2.0")
+    implementation ("com.google.android.exoplayer:exoplayer:2.15.1")
+    implementation("io.coil-kt:coil-compose:2.5.0")
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
     implementation("androidx.activity:activity-compose:1.8.0")
