@@ -5,9 +5,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.mynotes.Data.DoesOb
 import com.example.mynotes.Data.NotesOb
 import com.example.mynotes.Data.NotesRepository
-import com.example.mynotes.State.NoteUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -37,8 +37,16 @@ class NoteViewModel(var itemsRepository: NotesRepository): ViewModel() {
     var input by mutableStateOf("")
         private set
 
-    fun updateSearch(it: String) {
+    fun updateSearch(it: String): String {
         input = it
+        return input
     }
+
+    fun search(notes: List<NotesOb>, input: String): NoteUiState {
+        val filteredNotes = notes.filter { it.title.contains(input) || it.description.contains(input) }
+        return NoteUiState(filteredNotes)
+    }
+
     data class HomeUiState(val itemList: List<NotesOb> = listOf())
+    data class NoteUiState(val itemList: List<NotesOb> = listOf())
 }

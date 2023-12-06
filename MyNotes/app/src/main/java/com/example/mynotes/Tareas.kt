@@ -2,6 +2,7 @@ package com.example.mynotes
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.clickable
@@ -26,6 +27,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.Clear
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.BottomAppBar
@@ -39,6 +41,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -64,6 +67,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import androidx.room.Entity
 import com.example.mynotes.Data.DoesOb
 import com.example.mynotes.Data.InventoryDoesDatabase
 import com.example.mynotes.Navigation.Screens
@@ -71,6 +75,7 @@ import com.example.mynotes.ViewModel.TareaViewModel
 import com.example.mynotes.ui.theme.MyNotesTheme
 import kotlinx.coroutines.launch
 
+@Entity
 class Tareas : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -94,11 +99,12 @@ class Tareas : ComponentActivity() {
 fun Greeting3(navHostController: NavHostController, tareaViewModel: TareaViewModel = viewModel(factory = AppViewModelProvider.Factory),
               modifier: Modifier = Modifier) {
     val homeUiState by tareaViewModel.homeUiState.collectAsState()
-    val NoteUiState by tareaViewModel.uiState.collectAsState()
+    val tareaUiState by tareaViewModel.uiState.collectAsState()
 
     val db = InventoryDoesDatabase.getDatabase(LocalContext.current)
     //val listItems = db.itemDao().getAllItems()
-
+    val context = LocalContext.current
+    var query by remember { mutableStateOf("") }
 
     Scaffold(
         topBar = {
@@ -112,41 +118,63 @@ fun Greeting3(navHostController: NavHostController, tareaViewModel: TareaViewMod
                 }
             )
         },
-        content = {contenidoPrincipalTareas(contentPadding = it, itemList = homeUiState.itemList, viewModel =tareaViewModel, navController =navHostController)}
-        ,
         bottomBar  ={
             BottomAppBar(
 
                 actions = {
-                    IconButton(
-                        onClick = { navHostController.navigate(Screens.NotaScreen.route) },
-                        modifier = Modifier
-                            .fillMaxHeight()
-                            .width(80.dp))
-                    {
-                        Column {
-                            Icon(Icons.Filled.Create,
-                                contentDescription = "Notas"
-                            )
-                            Text(text = "Notas")
+                    Row(horizontalArrangement = Arrangement.Center){
+                        IconButton(
+                            onClick = { navHostController.navigate(Screens.NotaScreen.route) },
+                            modifier = Modifier
+                                .fillMaxHeight()
+                                .width(80.dp))
+                        {
+                            Column {
+                                Icon(Icons.Filled.Create,
+                                    contentDescription = "Notas"
+                                )
+                                Text(text = "Notas")
+                            }
                         }
-                    }
-                    IconButton(
-                        onClick = { /* do something */ },
-                        modifier = Modifier
-                            .fillMaxHeight()
-                            .width(80.dp))
-                    {
-                        Column {
-                            Icon(
-                                Icons.Filled.List,
-                                contentDescription = "Tareas",
-                            )
-                            Text(text = "Tareas")
+                        IconButton(
+                            onClick = { /* do something */ },
+                            modifier = Modifier
+                                .fillMaxHeight()
+                                .width(80.dp))
+                        {
+                            Column {
+                                Icon(
+                                    Icons.Filled.List,
+                                    contentDescription = "Tareas",
+                                )
+                                Text(text = "Tareas")
+                            }
+                        }
+                        var active by remember { mutableStateOf(false) }
+                        SearchBar(
+                            query = query,
+                            onQueryChange = { query = tareaViewModel.updateSearch(it)},
+                            onSearch = {
+                                Toast.makeText(context, query, Toast.LENGTH_SHORT).show()
+                                active=false },
+                            modifier = Modifier.fillMaxWidth(),
+                            placeholder = { Text(text = "Buscar...") },
+                            leadingIcon = { Icon(Icons.Filled.Search, contentDescription = "Buscar") },
+                            active = active,
+                            onActiveChange = { active = it }
+                        ) {
+                            val searchResultUiState = tareaViewModel.search(homeUiState.itemList, query)
+                            contenidoPrincipalTareas(itemList = homeUiState.itemList, viewModel =tareaViewModel, navController =navHostController)
+
                         }
                     }
                 },
             )
+        },
+        content =  {
+            if(query == ""){
+                contenidoPrincipalTareas(contentPadding = it, itemList = homeUiState.itemList, viewModel =tareaViewModel, navController =navHostController)
+            }
         },
         floatingActionButton = {
             FloatingActionButton(onClick = { navHostController.navigate(Screens.NewTareaScreen.route) }) {
@@ -156,35 +184,7 @@ fun Greeting3(navHostController: NavHostController, tareaViewModel: TareaViewMod
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun BarraBusqueda(search: String,onSearch: (String) -> Unit)  {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth(),
-        horizontalArrangement = Arrangement.Center
-    ) {
-        OutlinedTextField(
-            value = search,
-            onValueChange = onSearch,
-            label = {
-                Text(text = "Buscar")
-            },
-            trailingIcon = {
-                IconButton(onClick = { /*TODO*/ }) {
-                    Icon(imageVector = Icons.Outlined.Clear, contentDescription = null)
-                }
-            },
-            shape = RoundedCornerShape(16.dp),
-            keyboardOptions = KeyboardOptions(
-                imeAction = ImeAction.Search
-            ),
-            //keyboardactions = que hacer en el evento
-            modifier = Modifier
-                .fillMaxWidth(0.85f)
-        )
-    }
-}
+
 @Composable
 fun contenidoPrincipalTareas(
     contentPadding: PaddingValues = PaddingValues(0.dp),
