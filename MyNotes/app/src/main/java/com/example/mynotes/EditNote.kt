@@ -64,6 +64,7 @@ object EditNoteDestination {
     const val itemIdArg = "itemId"
     val routeWithArgs = "editnote/{$itemIdArg}"
 }
+
 class EditNote : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -117,13 +118,13 @@ private fun content(
     )
 }
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditNoteForm(
     navHostController: NavHostController,
     newNoteViewModel: EditNoteViewModel = viewModel(factory = AppViewModelProvider.Factory),
     modifier: Modifier = Modifier) {
+
 
     val sheetState = rememberModalBottomSheetState()
     val coroutineScope = rememberCoroutineScope()
@@ -140,7 +141,7 @@ fun EditNoteForm(
     }
 
     var listImageUri by remember {
-        mutableStateOf(listOf<Uri>())
+        mutableStateOf(newNoteViewModel.uriImagesCargadas)
     }
     var showImage by remember {
         mutableStateOf(false)
@@ -161,6 +162,8 @@ fun EditNoteForm(
             }
             imageUri = uri
             showImage = !showImage
+
+            newNoteViewModel.uriImages= fromStringList(listImageUri).toString()
         }
     }
 
@@ -168,6 +171,7 @@ fun EditNoteForm(
         DialogShowImageTake(
             onDismiss = {showImage = !showImage },
             imageUri = listImageUri)
+
     }
     // tomar foto FIN ------------------------------------------------------------------------------
 
@@ -176,7 +180,7 @@ fun EditNoteForm(
         mutableStateOf<Uri?>(null)
     }
     var listVideoUri by remember {
-        mutableStateOf(listOf<Uri>())
+        mutableStateOf(newNoteViewModel.uriVideosCargadas)
     }
     var showVideo by remember {
         mutableStateOf(false)
@@ -195,6 +199,7 @@ fun EditNoteForm(
             }
             videoUri = uri
             showVideo = !showVideo
+            newNoteViewModel.uriVideos= fromStringList(listVideoUri).toString()
         }
     }
     if(showVideo){
@@ -203,6 +208,7 @@ fun EditNoteForm(
             onDismiss = { showVideo = !showVideo },
             videoUri = listVideoUri
         )
+
     }
     // tomar video FIN -----------------------------------------------------------------------------
 
@@ -212,7 +218,7 @@ fun EditNoteForm(
         mutableStateOf<Uri?>(null)
     }
     var listAudioUri by remember {
-        mutableStateOf(listOf<Uri>())
+        mutableStateOf(newNoteViewModel.uriAudiosCargadas)
     }
     var showAudio by remember {
         mutableStateOf(false)
@@ -232,6 +238,7 @@ fun EditNoteForm(
         }
         audioUri = uri
         showAudio = !showAudio
+        newNoteViewModel.uriAudios= fromStringList(listAudioUri).toString()
     }
 
     if(showAudio){

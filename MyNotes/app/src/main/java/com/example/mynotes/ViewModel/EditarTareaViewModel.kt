@@ -1,5 +1,6 @@
 package com.example.mynotes.ViewModel
 
+import android.net.Uri
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -16,6 +17,7 @@ import com.example.mynotes.State.NewNoteUiState
 import com.example.mynotes.State.NewTareaUiState
 import com.example.mynotes.State.NoteUiState
 import com.example.mynotes.State.TareaUiState
+import com.example.mynotes.toStringList
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -26,6 +28,15 @@ import kotlinx.coroutines.launch
 class EditarTareaViewModel (savedStateHandle: SavedStateHandle, private val doesRepository: DoesRepository): ViewModel() {
     private val _uiState= MutableStateFlow(NewTareaUiState())
     val uiState: StateFlow<NewTareaUiState> = _uiState.asStateFlow()
+
+    //Uris en texto
+    var uriImages by mutableStateOf(String())
+    var uriVideos by mutableStateOf(String())
+    var uriAudios by mutableStateOf(String())
+
+    var uriImagesCargadas by mutableStateOf(listOf<Uri>())
+    var uriVideosCargadas by mutableStateOf(listOf<Uri>())
+    var uriAudiosCargadas by mutableStateOf(listOf<Uri>())
 
     var itemUiState by mutableStateOf(DoesUiState())
         private set
@@ -40,10 +51,19 @@ class EditarTareaViewModel (savedStateHandle: SavedStateHandle, private val does
                 .first()
                 .toItemUiState()
         }
+        uriImagesCargadas= toStringList(itemUiState.doesDetails.images)?: listOf<Uri>();
+        uriAudiosCargadas= toStringList(itemUiState.doesDetails.audios)?: listOf<Uri>();
+        uriVideosCargadas= toStringList(itemUiState.doesDetails.videos)?: listOf<Uri>();
     }
 
     suspend fun updateItem() {
-        doesRepository.updateItem(itemUiState.doesDetails.toItem())
+        /*
+        itemUiState.doesDetails.toItem().uriAudios=uriAudios;
+        itemUiState.doesDetails.toItem().uriAudios=uriAudios;
+        itemUiState.doesDetails.toItem().uriAudios=uriAudios;
+         */
+        val tareaE = itemUiState.doesDetails.copy(images = uriImages, videos = uriVideos, audios = uriAudios).toItem()
+        doesRepository.updateItem(tareaE)
     }
 
     fun updateUiState(doesDetails: DoesDetails) {

@@ -22,8 +22,18 @@ class NewTareaViewModel (private val itemsRepository: DoesRepository): ViewModel
 
     var doesUiState by mutableStateOf(DoesUiState())
         private set
+    //Uris en texto
+    var uriImages by mutableStateOf(String())
+    var uriVideos by mutableStateOf(String())
+    var uriAudios by mutableStateOf(String())
     suspend fun saveItem() {
-        itemsRepository.insertItem(doesUiState.doesDetails.toItem())
+        /*
+        doesUiState.doesDetails.toItem().uriAudios=uriAudios;
+        doesUiState.doesDetails.toItem().uriAudios=uriAudios;
+        doesUiState.doesDetails.toItem().uriAudios=uriAudios;
+         */
+        val tareaN = doesUiState.doesDetails.copy(images = uriImages, videos = uriVideos, audios = uriAudios).toItem()
+        itemsRepository.insertItem(tareaN)
     }
     fun updateUiState(doesDetails: DoesDetails) {
         doesUiState =
@@ -70,7 +80,11 @@ fun DoesDetails.toItem(): DoesOb = DoesOb(
     title = titulo,
     description = contenido,
     date = start,
-    dateEnd = end
+    dateEnd = end,
+    uriImages = images,
+    uriVideos = videos,
+    uriAudios = audios
+
 )
 data class DoesUiState(
     val doesDetails: DoesDetails = DoesDetails(),
@@ -80,6 +94,8 @@ data class DoesDetails(
     val titulo: String = "",
     val contenido: String = "",
     val start: String="",
-    val end: String=""
-
+    val end: String="",
+    val images: String="",
+    val videos: String="",
+    val audios: String=""
 )

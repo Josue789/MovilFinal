@@ -87,6 +87,7 @@ object EditTareaDestination {
     val routeWithArgs = "edittarea/{$tareaIdArg}"
 }
 class EditTarea : ComponentActivity() {
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -137,7 +138,6 @@ fun EditTareaForm(navHostController: NavHostController,
     var listImageTemp by remember {
         mutableStateOf("")
     }
-
     val cameraLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.TakePicture()
     ) { success ->
@@ -149,6 +149,7 @@ fun EditTareaForm(navHostController: NavHostController,
             }
             imageUri = uri
             showImage = !showImage
+            newTareaViewModel.uriImages= fromStringList(listImageUri).toString()
         }
     }
 
@@ -166,7 +167,7 @@ fun EditTareaForm(navHostController: NavHostController,
         mutableStateOf<Uri?>(null)
     }
     var listVideoUri by remember {
-        mutableStateOf(listOf<Uri>())
+        mutableStateOf(newTareaViewModel.uriVideosCargadas)
     }
     var showVideo by remember {
         mutableStateOf(false)
@@ -185,6 +186,7 @@ fun EditTareaForm(navHostController: NavHostController,
             }
             videoUri = uri
             showVideo = !showVideo
+            newTareaViewModel.uriVideos= fromStringList(listVideoUri).toString()
         }
     }
     if(showVideo){
@@ -222,6 +224,7 @@ fun EditTareaForm(navHostController: NavHostController,
         }
         audioUri = uri
         showAudio = !showAudio
+        newTareaViewModel.uriAudios= fromStringList(listAudioUri).toString()
     }
 
     if(showAudio){
@@ -556,6 +559,7 @@ private fun endDate(
     )
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true)
 @Composable
 fun EditTareaForm() {

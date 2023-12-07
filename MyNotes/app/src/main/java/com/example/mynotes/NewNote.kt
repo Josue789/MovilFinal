@@ -59,6 +59,7 @@ import com.example.mynotes.ViewModel.NewNoteViewModel
 import com.example.mynotes.ui.theme.MyNotesTheme
 import kotlinx.coroutines.launch
 
+
 class NewNote : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -154,6 +155,7 @@ fun Greeting4(
             }
             imageUri = uri
             showImage = !showImage
+            newNoteViewModel.uriImages= fromStringList(listImageUri).toString()
         }
     }
 
@@ -190,6 +192,7 @@ fun Greeting4(
             }
             videoUri = uri
             showVideo = !showVideo
+            newNoteViewModel.uriVideos= fromStringList(listVideoUri).toString()
         }
     }
     if(showVideo){
@@ -227,6 +230,7 @@ fun Greeting4(
         }
         audioUri = uri
         showAudio = !showAudio
+        newNoteViewModel.uriAudios= fromStringList(listAudioUri).toString()
     }
 
     if(showAudio){
@@ -294,7 +298,7 @@ fun Greeting4(
                     }
                 }
             )
-
+            Text(text = newNoteViewModel.uriImages)
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {

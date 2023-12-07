@@ -1,5 +1,6 @@
 package com.example.mynotes.ViewModel
 
+import android.net.Uri
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -16,9 +17,21 @@ class NewNoteViewModel(private val itemsRepository: NotesRepository): ViewModel(
     val uiState: StateFlow<NewNoteUiState> = _uiState.asStateFlow()
     var itemUiState by mutableStateOf(ItemUiState())
         private set
+    //Uris en texto
+    var uriImages by mutableStateOf(String())
+    var uriVideos by mutableStateOf(String())
+    var uriAudios by mutableStateOf(String())
     suspend fun saveItem() {
-        itemsRepository.insertItem(itemUiState.itemDetails.toItem())
+        /*
+        itemUiState.itemDetails.toItem().uriAudios=uriAudios;
+        itemUiState.itemDetails.toItem().uriAudios=uriAudios;
+        itemUiState.itemDetails.toItem().uriAudios=uriAudios;
+        */
+        val nota = itemUiState.itemDetails.copy(uriImages=uriImages, uriVideos = uriVideos, uriAudios = uriAudios).toItem()
+        itemsRepository.insertItem(nota)
     }
+
+
 
     fun updateUiState(itemDetails: ItemDetails) {
         itemUiState =
@@ -45,12 +58,20 @@ fun NotesOb.toItemUiState(): ItemUiState = ItemUiState(
 fun NotesOb.toItemDetails(): ItemDetails = ItemDetails(
     id = id,
     titulo = title,
-    contenido = description
+    contenido = description,
+    uriImages = uriImages,
+    uriAudios = uriAudios,
+    uriVideos = uriVideos
+
 )
 fun ItemDetails.toItem(): NotesOb = NotesOb(
     id = id,
     title = titulo,
-    description = contenido
+    description = contenido,
+    uriImages = uriImages,
+    uriVideos =  uriVideos,
+    uriAudios =  uriAudios
+
 )
 data class ItemUiState(
     val itemDetails: ItemDetails = ItemDetails()
@@ -58,5 +79,8 @@ data class ItemUiState(
 data class ItemDetails(
     val id: Int = 0,
     val titulo: String = "",
-    val contenido: String = ""
+    val contenido: String = "",
+    val uriImages: String = "",
+    val uriVideos: String = "",
+    val uriAudios: String = ""
 )

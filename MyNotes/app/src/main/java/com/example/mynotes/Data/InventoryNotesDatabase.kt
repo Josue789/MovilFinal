@@ -3,9 +3,8 @@ package com.example.mynotes.Data
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
-import androidx.room.Room.databaseBuilder
 import androidx.room.RoomDatabase
-import com.example.mynotes.Notes
+import androidx.room.TypeConverters
 
 
 @Database(entities = [NotesOb::class], version = 1, exportSchema = false)

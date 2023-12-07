@@ -91,7 +91,9 @@ import com.example.mynotes.ViewModel.NewNoteViewModel
 import kotlinx.coroutines.launch
 import java.util.Date
 
+
 class NewTarea : ComponentActivity() {
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -154,6 +156,7 @@ fun Greeting5(navHostController: NavHostController,
             }
             imageUri = uri
             showImage = !showImage
+            newTareaViewModel.uriImages= fromStringList(listImageUri).toString()
         }
     }
 
@@ -190,6 +193,7 @@ fun Greeting5(navHostController: NavHostController,
             }
             videoUri = uri
             showVideo = !showVideo
+            newTareaViewModel.uriVideos= fromStringList(listVideoUri).toString()
         }
     }
     if(showVideo){
@@ -227,6 +231,7 @@ fun Greeting5(navHostController: NavHostController,
         }
         audioUri = uri
         showAudio = !showAudio
+        newTareaViewModel.uriAudios= fromStringList(listAudioUri).toString()
     }
 
     if(showAudio){
@@ -565,6 +570,7 @@ private fun endDate(
     )
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreview5() {
