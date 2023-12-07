@@ -8,8 +8,6 @@ import androidx.lifecycle.viewModelScope
 import com.example.mynotes.Data.DoesOb
 import com.example.mynotes.Data.DoesRepository
 import com.example.mynotes.Data.NotesOb
-import com.example.mynotes.Data.NotesRepository
-import com.example.mynotes.State.NoteUiState
 import com.example.mynotes.State.TareaUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -21,7 +19,6 @@ import kotlinx.coroutines.flow.stateIn
 class TareaViewModel(var itemsRepository: DoesRepository): ViewModel(){
     private val _uiState= MutableStateFlow(TareaUiState())
     val uiState: StateFlow<TareaUiState> = _uiState.asStateFlow()
-
     val homeUiState: StateFlow<TareaViewModel.HomeUiState> =
         itemsRepository.getAllItemsStream().map{ TareaViewModel.HomeUiState(it) }
             .stateIn(
@@ -39,8 +36,15 @@ class TareaViewModel(var itemsRepository: DoesRepository): ViewModel(){
     var input by mutableStateOf("")
         private set
 
-    fun updateSearch(it: String) {
+    fun updateSearch(it: String): String {
         input = it
+        return input
+    }
+
+    fun search(tarea: List<DoesOb>, input: String): TareaUiState {
+        val filteredTareas = tarea.filter { it.title.contains(input) || it.description.contains(input) }
+        return TareaUiState(filteredTareas)
     }
     data class HomeUiState(val itemList: List<DoesOb> = listOf())
+    data class TareaUiState(val itemList: List<DoesOb> = listOf())
 }

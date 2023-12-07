@@ -2,6 +2,7 @@ package com.example.mynotes
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.clickable
@@ -21,13 +22,11 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.List
-import androidx.compose.material.icons.outlined.Clear
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Card
@@ -38,8 +37,8 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -54,13 +53,10 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterVertically
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -95,14 +91,17 @@ class Notes : ComponentActivity() {
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "StateFlowValueCalledInComposition")
 @Composable
 fun Greeting2(navHostController: NavHostController, noteViewModel:NoteViewModel = viewModel(factory = AppViewModelProvider.Factory),
               modifier: Modifier = Modifier) {
     val homeUiState by noteViewModel.homeUiState.collectAsState()
-    val NoteUiState by noteViewModel.uiState.collectAsState()
+    val noteUiState by noteViewModel.uiState.collectAsState()
 
     val db= InventoryNotesDatabase.getDatabase(LocalContext.current)
+    val context = LocalContext.current
+    var query by remember { mutableStateOf("") }
+
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
@@ -149,17 +148,35 @@ fun Greeting2(navHostController: NavHostController, noteViewModel:NoteViewModel 
                                 Text(text = "Tareas")
                             }
                         }
-                        BarraBusqueda(search = noteViewModel.input,
-                            onSearch= {noteViewModel.updateSearch(it) })
-                    }
+                            var active by remember { mutableStateOf(false) }
+                            SearchBar(
+                                query = query,
+                                onQueryChange = { query = noteViewModel.updateSearch(it)},
+                                onSearch = {
+                                    Toast.makeText(context, query, Toast.LENGTH_SHORT).show()
+                                    active=false },
+                                modifier = Modifier.fillMaxWidth(),
+                                placeholder = { Text(text = "Buscar...") },
+                                leadingIcon = { Icon(Icons.Filled.Search, contentDescription = "Buscar") },
+                                active = active,
+                                onActiveChange = { active = it }
+                            ) {
+                                val notes = homeUiState.itemList
+                                contenidoPrincipal(itemList = notes.filter
+                                { it.title.contains(query) || it.description.contains(query) },
+                                    viewModel = noteViewModel, navController = navHostController)
+
+                            }
+                        }
 
                 },
             )
-
-
         },
+
         content =  {
-            contenidoPrincipal(contentPadding = it, itemList = homeUiState.itemList, viewModel=noteViewModel, navController=navHostController)
+            if(query == ""){
+                contenidoPrincipal(contentPadding = it, itemList = homeUiState.itemList, viewModel =noteViewModel, navController =navHostController)
+            }
         },
         floatingActionButton = {
             FloatingActionButton(onClick = { navHostController.navigate(Screens.NewNotaScreen.route) }) {
@@ -212,50 +229,6 @@ fun contenidoPrincipal(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
-@Composable
-private fun BarraBusqueda(search: String,onSearch: (String) -> Unit) {
-    val keyboardController = LocalSoftwareKeyboardController.current
-    Row(
-        modifier = Modifier
-            .fillMaxWidth(),
-        horizontalArrangement = Arrangement.Center
-    ) {
-        OutlinedTextField(
-            value = search,
-            onValueChange = onSearch,
-            label = {
-                Text(text = "Buscar")
-            },
-            trailingIcon = {
-                IconButton(onClick = {
-                    keyboardController?.hide()
-                }) {
-                    Icon(imageVector = Icons.Outlined.Clear, contentDescription = null)
-                }
-            },/*
-            supportingText = {
-                Text(text = "Nombre o descripcion de la nota")
-            },*/
-            shape = RoundedCornerShape(16.dp),
-            keyboardOptions = KeyboardOptions(
-                imeAction = ImeAction.Search
-            ),
-            keyboardActions = KeyboardActions(
-                onDone = {
-                    keyboardController?.hide()
-                }
-            ),
-            modifier = Modifier
-                .fillMaxWidth(0.85f)
-        )
-    }
-}
-
-
-
-
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TopAppBarSearch(modifier: Modifier=Modifier){
@@ -298,7 +271,7 @@ fun tarjetaNota(item: NotesOb,viewModel: NoteViewModel, navController: NavContro
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         modifier = Modifier
             .padding(horizontal = 16.dp, vertical = 8.dp)
-            .clickable { navController.navigate("editnote/${item.id}")  }
+            .clickable { navController.navigate("editnote/${item.id}") }
     ) {
         Row(
             modifier = Modifier
