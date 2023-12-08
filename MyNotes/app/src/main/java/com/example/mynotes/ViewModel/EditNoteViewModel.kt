@@ -1,6 +1,7 @@
 package com.example.mynotes.ViewModel
 
 import android.net.Uri
+import android.util.Log
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -25,7 +26,7 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
-class EditNoteViewModel(savedStateHandle: SavedStateHandle, private val itemsRepository: NotesRepository): ViewModel(){
+class   EditNoteViewModel(savedStateHandle: SavedStateHandle, private val itemsRepository: NotesRepository): ViewModel(){
     private val _uiState= MutableStateFlow(NewNoteUiState())
     val uiState: StateFlow<NewNoteUiState> = _uiState.asStateFlow()
     var itemUiState by mutableStateOf(ItemUiState())
@@ -49,10 +50,12 @@ class EditNoteViewModel(savedStateHandle: SavedStateHandle, private val itemsRep
                 .filterNotNull()
                 .first()
                 .toItemUiState()
+            Log.d("PERRO", itemUiState.itemDetails.toString())
+            uriImagesCargadas = toStringList(itemUiState.itemDetails.toItem().uriImages)?: listOf<Uri>();
+            uriAudiosCargadas = toStringList(itemUiState.itemDetails.toItem().uriAudios)?: listOf<Uri>();
+            uriVideosCargadas = toStringList(itemUiState.itemDetails.toItem().uriVideos)?: listOf<Uri>();
         }
-        uriImagesCargadas = toStringList(itemUiState.itemDetails.toItem().uriImages)?: listOf<Uri>();
-        uriAudiosCargadas = toStringList(itemUiState.itemDetails.toItem().uriAudios)?: listOf<Uri>();
-        uriVideosCargadas = toStringList(itemUiState.itemDetails.toItem().uriVideos)?: listOf<Uri>();
+
 
     }
     suspend fun updateItem() {

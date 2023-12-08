@@ -3,6 +3,7 @@ package com.example.mynotes
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
@@ -157,8 +158,10 @@ fun EditNoteForm(
         if (success) {
 
             uri.let {
+
                 listImageUri = listImageUri + it // Agrega la Uri a la lista
                 listImageTemp += "$it|"
+
             }
             imageUri = uri
             showImage = !showImage
@@ -168,6 +171,9 @@ fun EditNoteForm(
     }
 
     if(showImage){
+        if(listImageUri.size==1){
+            listImageUri+=newNoteViewModel.uriImagesCargadas;
+        }
         DialogShowImageTake(
             onDismiss = {showImage = !showImage },
             imageUri = listImageUri)
@@ -203,7 +209,9 @@ fun EditNoteForm(
         }
     }
     if(showVideo){
-
+        if(listVideoUri.size==1){
+            listVideoUri+=newNoteViewModel.uriVideosCargadas;
+        }
         DialogShowVideoTake(
             onDismiss = { showVideo = !showVideo },
             videoUri = listVideoUri
@@ -242,6 +250,9 @@ fun EditNoteForm(
     }
 
     if(showAudio){
+        if(listAudioUri.size==1){
+            listAudioUri+=newNoteViewModel.uriAudiosCargadas;
+        }
         DialogShowAudioSelected(
             onDismiss = { showAudio = !showAudio },
             fileUri = listAudioUri
@@ -367,22 +378,6 @@ fun EditNoteForm(
                     ) {
                         Icon(Icons.Filled.Mic, contentDescription = "Audio")
                         Text(text = " Audio")
-                    }
-                }
-
-                //Boton de Documentos
-                TextButton(onClick = {
-                    val intent = Intent(Intent.ACTION_GET_CONTENT)
-                    intent.type = "*/*"
-                    if (intent.resolveActivity(context.packageManager) != null) {
-                        context.startActivity(intent)
-                    }
-                }) {
-                    Row(
-                        modifier = modifier.fillMaxWidth()
-                    ) {
-                        Icon(Icons.Filled.FileOpen, contentDescription = "Document")
-                        Text(text = " Documentos")
                     }
                 }
             }

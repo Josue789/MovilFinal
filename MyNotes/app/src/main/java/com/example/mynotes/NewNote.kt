@@ -164,7 +164,6 @@ fun Greeting4(
             onDismiss = { showImage = !showImage },
             imageUri = listImageUri
         )
-
     }
     // tomar foto FIN ------------------------------------------------------------------------------
 
@@ -337,6 +336,18 @@ fun Greeting4(
                         Text(text = " Foto")
                     }
                 }
+                //Boton de mostrar Fotos
+                TextButton(onClick = {
+                    //Mostrar foto
+
+                }) {
+                    Row(
+                        modifier = modifier.fillMaxWidth()
+                    ) {
+                        Icon(Icons.Filled.CameraAlt, contentDescription = "Photo")
+                        Text(text = "Mostrar Foto")
+                    }
+                }
 
                 //Boton de Video
                 TextButton(onClick = {
@@ -348,6 +359,17 @@ fun Greeting4(
                     ) {
                         Icon(Icons.Filled.Videocam, contentDescription = "Video")
                         Text(text = " Video")
+                    }
+                }
+                //Boton de mostrar Video
+                TextButton(onClick = {
+
+                }) {
+                    Row(
+                        modifier = modifier.fillMaxWidth()
+                    ) {
+                        Icon(Icons.Filled.Videocam, contentDescription = "Video")
+                        Text(text = "Mostrar Video")
                     }
                 }
 
@@ -362,16 +384,15 @@ fun Greeting4(
                         Text(text = " Audio")
                     }
                 }
-
-                //Boton de Documentos
+                //Boton de mostrar Audio
                 TextButton(onClick = {
-
+                    //Mostrar Audios
                 }) {
                     Row(
                         modifier = modifier.fillMaxWidth()
                     ) {
-                        Icon(Icons.Filled.FileOpen, contentDescription = "Document")
-                        Text(text = " Documentos")
+                        Icon(Icons.Filled.Mic, contentDescription = "Audio")
+                        Text(text = "Mostrar Audio")
                     }
                 }
             }

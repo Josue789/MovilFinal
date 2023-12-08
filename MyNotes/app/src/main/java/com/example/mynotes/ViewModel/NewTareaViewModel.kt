@@ -1,5 +1,6 @@
 package com.example.mynotes.ViewModel
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -32,7 +33,10 @@ class NewTareaViewModel (private val itemsRepository: DoesRepository): ViewModel
         doesUiState.doesDetails.toItem().uriAudios=uriAudios;
         doesUiState.doesDetails.toItem().uriAudios=uriAudios;
          */
+        Log.d("Perro Con datos de texto",doesUiState.doesDetails.toString())
         val tareaN = doesUiState.doesDetails.copy(images = uriImages, videos = uriVideos, audios = uriAudios).toItem()
+        Log.d("Perro Con datos de texto",tareaN.toString())
+
         itemsRepository.insertItem(tareaN)
     }
     fun updateUiState(doesDetails: DoesDetails) {

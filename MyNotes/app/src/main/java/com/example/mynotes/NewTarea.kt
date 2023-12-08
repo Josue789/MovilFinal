@@ -376,22 +376,6 @@ fun Greeting5(navHostController: NavHostController,
                         Text(text = " Audio")
                     }
                 }
-
-                //Boton de Documentos
-                TextButton(onClick = {
-                    val intent = Intent(Intent.ACTION_GET_CONTENT)
-                    intent.type = "*/*"
-                    if (intent.resolveActivity(context.packageManager) != null) {
-                        context.startActivity(intent)
-                    }
-                }) {
-                    Row(
-                        modifier = modifier.fillMaxWidth()
-                    ) {
-                        Icon(Icons.Filled.FileOpen, contentDescription = "Document")
-                        Text(text = " Documentos")
-                    }
-                }
             }
         }
         Column(

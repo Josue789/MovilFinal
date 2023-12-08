@@ -154,6 +154,9 @@ fun EditTareaForm(navHostController: NavHostController,
     }
 
     if(showImage){
+        if(listImageUri.size==1){
+            listImageUri+=newTareaViewModel.uriVideosCargadas;
+        }
         DialogShowImageTake(
             onDismiss = { showImage = !showImage },
             imageUri = listImageUri
@@ -190,7 +193,9 @@ fun EditTareaForm(navHostController: NavHostController,
         }
     }
     if(showVideo){
-
+        if(listVideoUri.size==1){
+            listVideoUri+=newTareaViewModel.uriVideosCargadas;
+        }
         DialogShowVideoTake(
             onDismiss = { showVideo = !showVideo },
             videoUri = listVideoUri
@@ -228,6 +233,9 @@ fun EditTareaForm(navHostController: NavHostController,
     }
 
     if(showAudio){
+        if(listAudioUri.size==1){
+            listAudioUri+=newTareaViewModel.uriAudiosCargadas;
+        }
         DialogShowAudioSelected(
             onDismiss = { showAudio = !showAudio },
             fileUri = listAudioUri
@@ -364,22 +372,6 @@ fun EditTareaForm(navHostController: NavHostController,
                     ) {
                         Icon(Icons.Filled.Mic, contentDescription = "Audio")
                         Text(text = " Audio")
-                    }
-                }
-
-                //Boton de Documentos
-                TextButton(onClick = {
-                    val intent = Intent(Intent.ACTION_GET_CONTENT)
-                    intent.type = "*/*"
-                    if (intent.resolveActivity(context.packageManager) != null) {
-                        context.startActivity(intent)
-                    }
-                }) {
-                    Row(
-                        modifier = modifier.fillMaxWidth()
-                    ) {
-                        Icon(Icons.Filled.FileOpen, contentDescription = "Document")
-                        Text(text = " Documentos")
                     }
                 }
             }

@@ -1,6 +1,7 @@
 package com.example.mynotes.ViewModel
 
 import android.net.Uri
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -50,10 +51,13 @@ class EditarTareaViewModel (savedStateHandle: SavedStateHandle, private val does
                 .filterNotNull()
                 .first()
                 .toItemUiState()
+            Log.d("PERRO Cargado", itemUiState.doesDetails.toString())
+            uriImagesCargadas= toStringList(itemUiState.doesDetails.toItem().uriImages)?: listOf<Uri>();
+            uriAudiosCargadas= toStringList(itemUiState.doesDetails.toItem().uriVideos)?: listOf<Uri>();
+            uriVideosCargadas= toStringList(itemUiState.doesDetails.toItem().uriAudios)?: listOf<Uri>();
         }
-        uriImagesCargadas= toStringList(itemUiState.doesDetails.images)?: listOf<Uri>();
-        uriAudiosCargadas= toStringList(itemUiState.doesDetails.audios)?: listOf<Uri>();
-        uriVideosCargadas= toStringList(itemUiState.doesDetails.videos)?: listOf<Uri>();
+
+
     }
 
     suspend fun updateItem() {
