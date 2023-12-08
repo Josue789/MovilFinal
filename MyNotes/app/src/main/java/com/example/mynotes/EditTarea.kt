@@ -7,6 +7,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Log
 import android.widget.DatePicker
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -158,7 +159,7 @@ fun EditTareaForm(navHostController: NavHostController,
 
     if(showImage){
         if(firstImage){
-            listImageUri+=newTareaViewModel.uriVideosCargadas;
+            listImageUri+=newTareaViewModel.uriImagesCargadas;
             firstImage=false;
         }
         DialogShowImageTake(
@@ -364,8 +365,15 @@ fun EditTareaForm(navHostController: NavHostController,
                 }
 
                 //Boton de Audio
+                var aClicks by remember{ mutableStateOf(0)}
                 TextButton(onClick = {
-                    audioPickerLauncher.launch("audio/*")
+                    aClicks ++;
+                    if(aClicks==1){
+                        showAudio=true;
+                    }else{
+                        aClicks=0
+                        audioPickerLauncher.launch("audio/*")
+                    }
                 }) {
                     Row(
                         modifier = modifier.fillMaxWidth()

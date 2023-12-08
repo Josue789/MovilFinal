@@ -33,7 +33,6 @@ class NewTareaViewModel (private val itemsRepository: DoesRepository): ViewModel
         doesUiState.doesDetails.toItem().uriAudios=uriAudios;
         doesUiState.doesDetails.toItem().uriAudios=uriAudios;
          */
-        Log.d("Perro Con datos de texto",doesUiState.doesDetails.toString())
         val tareaN = doesUiState.doesDetails.copy(images = uriImages, videos = uriVideos, audios = uriAudios).toItem()
         Log.d("Perro Con datos de texto",tareaN.toString())
 
@@ -77,7 +76,10 @@ fun DoesOb.toItemDetails(): DoesDetails = DoesDetails(
     titulo = title,
     contenido = description,
     start = date,
-    end = dateEnd
+    end = dateEnd,
+    images = uriImages,
+    videos = uriVideos,
+    audios = uriAudios
 )
 fun DoesDetails.toItem(): DoesOb = DoesOb(
     id = id,

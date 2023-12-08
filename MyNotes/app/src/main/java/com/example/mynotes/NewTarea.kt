@@ -14,6 +14,7 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.provider.Settings.Global.getString
+import android.util.Log
 import android.widget.DatePicker
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -242,35 +243,6 @@ fun Greeting5(navHostController: NavHostController,
     }
     // seleccionar audio FIN ---------------------------------------------------------------------
 
-    // seleccionar audio INICIO ------------------------------------------------------------------
-    var fileUri by remember {
-        mutableStateOf<Uri?>(null)
-    }
-    var listFileUri by remember {
-        mutableStateOf(listOf<Uri>())
-    }
-    var showFile by remember {
-        mutableStateOf(false)
-    }
-
-    val filePickerLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent(),
-    ) { uri: Uri? ->
-        uri?.let {
-            // Aquí puedes manejar la URI del archivo seleccionado
-            listFileUri = listFileUri + it // Agrega la Uri del archivo a la lista
-        }
-        fileUri = uri
-        showFile = !showFile
-    }
-
-    if(showFile){
-        DialogShowFileSelected(
-            onDismiss = { showFile = !showFile }
-        )
-    }
-    // seleccionar audio FIN ---------------------------------------------------------------------
-
 
 
     //Crea el canal de notificaciones
@@ -306,7 +278,9 @@ fun Greeting5(navHostController: NavHostController,
                                 }
 
                             }
+
                             coroutineScope.launch {
+                                Log.d("GATO",newTareaViewModel.doesUiState.doesDetails.toString())
                                 newTareaViewModel.saveItem()
                                 navHostController.popBackStack()
                             }

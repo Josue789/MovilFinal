@@ -51,10 +51,11 @@ class EditarTareaViewModel (savedStateHandle: SavedStateHandle, private val does
                 .filterNotNull()
                 .first()
                 .toItemUiState()
-            Log.d("PERRO Cargado", itemUiState.doesDetails.toString())
+
             uriImagesCargadas= toStringList(itemUiState.doesDetails.toItem().uriImages)?: listOf<Uri>();
-            uriAudiosCargadas= toStringList(itemUiState.doesDetails.toItem().uriVideos)?: listOf<Uri>();
-            uriVideosCargadas= toStringList(itemUiState.doesDetails.toItem().uriAudios)?: listOf<Uri>();
+            //Log.d("PERRO Cargado", uriImagesCargadas.toString())
+            uriVideosCargadas= toStringList(itemUiState.doesDetails.toItem().uriVideos)?: listOf<Uri>();
+            uriAudiosCargadas= toStringList(itemUiState.doesDetails.toItem().uriAudios)?: listOf<Uri>();
         }
 
 

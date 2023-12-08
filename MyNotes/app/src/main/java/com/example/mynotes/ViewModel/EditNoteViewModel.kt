@@ -50,7 +50,7 @@ class   EditNoteViewModel(savedStateHandle: SavedStateHandle, private val itemsR
                 .filterNotNull()
                 .first()
                 .toItemUiState()
-            Log.d("PERRO", itemUiState.itemDetails.toString())
+            Log.d("Firulais", itemUiState.itemDetails.contenido)
             uriImagesCargadas = toStringList(itemUiState.itemDetails.toItem().uriImages)?: listOf<Uri>();
             uriAudiosCargadas = toStringList(itemUiState.itemDetails.toItem().uriAudios)?: listOf<Uri>();
             uriVideosCargadas = toStringList(itemUiState.itemDetails.toItem().uriVideos)?: listOf<Uri>();
