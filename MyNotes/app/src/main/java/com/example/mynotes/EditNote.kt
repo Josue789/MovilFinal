@@ -147,6 +147,9 @@ fun EditNoteForm(
     var showImage by remember {
         mutableStateOf(false)
     }
+    var firstImage by remember {
+        mutableStateOf(true)
+    }
 
     var listImageTemp by remember {
         mutableStateOf("")
@@ -164,18 +167,19 @@ fun EditNoteForm(
 
             }
             imageUri = uri
-            showImage = !showImage
+            showImage = true
 
             newNoteViewModel.uriImages= fromStringList(listImageUri).toString()
         }
     }
 
     if(showImage){
-        if(listImageUri.size==1){
+        if(firstImage){
             listImageUri+=newNoteViewModel.uriImagesCargadas;
+            firstImage=false;
         }
         DialogShowImageTake(
-            onDismiss = {showImage = !showImage },
+            onDismiss = {showImage = false },
             imageUri = listImageUri)
 
     }
@@ -191,6 +195,9 @@ fun EditNoteForm(
     var showVideo by remember {
         mutableStateOf(false)
     }
+    var firstVideo by remember {
+        mutableStateOf(true)
+    }
     var listVideoTemp by remember {
         mutableStateOf("")
     }
@@ -204,16 +211,17 @@ fun EditNoteForm(
                 listVideoTemp += "$it|"
             }
             videoUri = uri
-            showVideo = !showVideo
+            showVideo = true
             newNoteViewModel.uriVideos= fromStringList(listVideoUri).toString()
         }
     }
     if(showVideo){
-        if(listVideoUri.size==1){
+        if(firstVideo){
             listVideoUri+=newNoteViewModel.uriVideosCargadas;
+            firstVideo=false;
         }
         DialogShowVideoTake(
-            onDismiss = { showVideo = !showVideo },
+            onDismiss = { showVideo = false },
             videoUri = listVideoUri
         )
 
@@ -232,6 +240,10 @@ fun EditNoteForm(
         mutableStateOf(false)
     }
 
+    var firstAudio by remember {
+        mutableStateOf(true)
+    }
+
     var listAudioTemp by remember {
         mutableStateOf("")
     }
@@ -245,52 +257,21 @@ fun EditNoteForm(
             listAudioTemp += "$it|"
         }
         audioUri = uri
-        showAudio = !showAudio
+        showAudio = true
         newNoteViewModel.uriAudios= fromStringList(listAudioUri).toString()
     }
 
     if(showAudio){
-        if(listAudioUri.size==1){
+        if(firstAudio){
             listAudioUri+=newNoteViewModel.uriAudiosCargadas;
+            firstAudio = false;
         }
         DialogShowAudioSelected(
-            onDismiss = { showAudio = !showAudio },
+            onDismiss = { showAudio = false },
             fileUri = listAudioUri
         )
     }
     // seleccionar audio FIN ---------------------------------------------------------------------
-
-    // seleccionar audio INICIO ------------------------------------------------------------------
-    var fileUri by remember {
-        mutableStateOf<Uri?>(null)
-    }
-    var listFileUri by remember {
-        mutableStateOf(listOf<Uri>())
-    }
-    var showFile by remember {
-        mutableStateOf(false)
-    }
-
-    val filePickerLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent(),
-    ) { uri: Uri? ->
-        uri?.let {
-            // Aquí puedes manejar la URI del archivo seleccionado
-            listFileUri = listFileUri + it // Agrega la Uri del archivo a la lista
-        }
-        fileUri = uri
-        showFile = !showFile
-    }
-
-    if(showFile){
-        DialogShowFileSelected(
-            onDismiss = { showFile = !showFile }
-        )
-    }
-    // seleccionar audio FIN ---------------------------------------------------------------------
-
-
-
 
 
     Scaffold (
@@ -343,10 +324,21 @@ fun EditNoteForm(
                 // Sheet content
                 val context = LocalContext.current
 
+
                 //Boton de Fotos
+                var pClicks by remember {
+                    mutableStateOf(0)
+                }
                 TextButton(onClick = {
-                    uri = ComposeProvider.getImageUri(context)
-                    cameraLauncher.launch(uri)
+                    pClicks ++;
+                    if(pClicks==1){
+                        showImage=true;
+                    }else{
+                        pClicks=0
+                        uri = ComposeProvider.getImageUri(context)
+                        cameraLauncher.launch(uri)
+                    }
+
                 }) {
                     Row(
                         modifier = modifier.fillMaxWidth()
@@ -356,10 +348,18 @@ fun EditNoteForm(
                     }
                 }
 
+
                 //Boton de Video
+                var vClicks by remember{ mutableStateOf(0)}
                 TextButton(onClick = {
-                    uri = ComposeProvider.getImageUri(context)
-                    videoLauncher.launch(uri)
+                    vClicks ++;
+                    if(vClicks==1){
+                        showVideo=true;
+                    }else{
+                        vClicks=0
+                        uri = ComposeProvider.getImageUri(context)
+                        videoLauncher.launch(uri)
+                    }
                 }) {
                     Row(
                         modifier = modifier.fillMaxWidth()
@@ -369,9 +369,18 @@ fun EditNoteForm(
                     }
                 }
 
+
                 //Boton de Audio
+                var aClicks by remember{ mutableStateOf(0)}
                 TextButton(onClick = {
-                    audioPickerLauncher.launch("audio/*")
+                    aClicks ++;
+                    if(aClicks==1){
+                        showAudio=true;
+                    }else{
+                        aClicks=0
+                        audioPickerLauncher.launch("audio/*")
+                    }
+
                 }) {
                     Row(
                         modifier = modifier.fillMaxWidth()

@@ -130,10 +130,13 @@ fun EditTareaForm(navHostController: NavHostController,
         mutableStateOf<Uri?>(null)
     }
     var listImageUri by remember {
-        mutableStateOf(listOf<Uri>())
+        mutableStateOf(newTareaViewModel.uriImagesCargadas)
     }
     var showImage by remember {
         mutableStateOf(false)
+    }
+    var firstImage by remember {
+        mutableStateOf(true)
     }
     var listImageTemp by remember {
         mutableStateOf("")
@@ -148,17 +151,18 @@ fun EditTareaForm(navHostController: NavHostController,
                 listImageTemp += "$it|"
             }
             imageUri = uri
-            showImage = !showImage
+            showImage = true
             newTareaViewModel.uriImages= fromStringList(listImageUri).toString()
         }
     }
 
     if(showImage){
-        if(listImageUri.size==1){
+        if(firstImage){
             listImageUri+=newTareaViewModel.uriVideosCargadas;
+            firstImage=false;
         }
         DialogShowImageTake(
-            onDismiss = { showImage = !showImage },
+            onDismiss = { showImage = false },
             imageUri = listImageUri
         )
 
@@ -175,6 +179,9 @@ fun EditTareaForm(navHostController: NavHostController,
     var showVideo by remember {
         mutableStateOf(false)
     }
+    var firstVideo by remember {
+        mutableStateOf(true)
+    }
     var listVideoTemp by remember {
         mutableStateOf("")
     }
@@ -188,16 +195,17 @@ fun EditTareaForm(navHostController: NavHostController,
                 listVideoTemp += "$it|"
             }
             videoUri = uri
-            showVideo = !showVideo
+            showVideo = true
             newTareaViewModel.uriVideos= fromStringList(listVideoUri).toString()
         }
     }
     if(showVideo){
-        if(listVideoUri.size==1){
+        if(firstVideo){
             listVideoUri+=newTareaViewModel.uriVideosCargadas;
+            firstVideo=false;
         }
         DialogShowVideoTake(
-            onDismiss = { showVideo = !showVideo },
+            onDismiss = { showVideo = false },
             videoUri = listVideoUri
         )
     }
@@ -209,10 +217,14 @@ fun EditTareaForm(navHostController: NavHostController,
         mutableStateOf<Uri?>(null)
     }
     var listAudioUri by remember {
-        mutableStateOf(listOf<Uri>())
+        mutableStateOf(newTareaViewModel.uriAudiosCargadas)
     }
     var showAudio by remember {
         mutableStateOf(false)
+    }
+
+    var firstAudio by remember {
+        mutableStateOf(true)
     }
 
     var listAudioTemp by remember {
@@ -228,46 +240,18 @@ fun EditTareaForm(navHostController: NavHostController,
             listAudioTemp += "$it|"
         }
         audioUri = uri
-        showAudio = !showAudio
+        showAudio = true
         newTareaViewModel.uriAudios= fromStringList(listAudioUri).toString()
     }
 
     if(showAudio){
-        if(listAudioUri.size==1){
+        if(firstAudio){
             listAudioUri+=newTareaViewModel.uriAudiosCargadas;
+            firstAudio=false
         }
         DialogShowAudioSelected(
-            onDismiss = { showAudio = !showAudio },
+            onDismiss = { showAudio = false },
             fileUri = listAudioUri
-        )
-    }
-    // seleccionar audio FIN ---------------------------------------------------------------------
-
-    // seleccionar audio INICIO ------------------------------------------------------------------
-    var fileUri by remember {
-        mutableStateOf<Uri?>(null)
-    }
-    var listFileUri by remember {
-        mutableStateOf(listOf<Uri>())
-    }
-    var showFile by remember {
-        mutableStateOf(false)
-    }
-
-    val filePickerLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent(),
-    ) { uri: Uri? ->
-        uri?.let {
-            // Aquí puedes manejar la URI del archivo seleccionado
-            listFileUri = listFileUri + it // Agrega la Uri del archivo a la lista
-        }
-        fileUri = uri
-        showFile = !showFile
-    }
-
-    if(showFile){
-        DialogShowFileSelected(
-            onDismiss = { showFile = !showFile }
         )
     }
     // seleccionar audio FIN ---------------------------------------------------------------------
@@ -338,9 +322,18 @@ fun EditTareaForm(navHostController: NavHostController,
                 val context = LocalContext.current
 
                 //Boton de Fotos
+                var pClicks by remember {
+                    mutableStateOf(0)
+                }
                 TextButton(onClick = {
-                    uri = ComposeProvider.getImageUri(context)
-                    cameraLauncher.launch(uri)
+                    pClicks ++;
+                    if(pClicks==1){
+                        showImage=true;
+                    }else{
+                        pClicks=0
+                        uri = ComposeProvider.getImageUri(context)
+                        cameraLauncher.launch(uri)
+                    }
                 }) {
                     Row(
                         modifier = modifier.fillMaxWidth()
@@ -351,9 +344,16 @@ fun EditTareaForm(navHostController: NavHostController,
                 }
 
                 //Boton de Video
+                var vClicks by remember{ mutableStateOf(0)}
                 TextButton(onClick = {
-                    uri = ComposeProvider.getImageUri(context)
-                    videoLauncher.launch(uri)
+                    vClicks ++;
+                    if(vClicks==1){
+                        showVideo=true;
+                    }else{
+                        vClicks=0
+                        uri = ComposeProvider.getImageUri(context)
+                        videoLauncher.launch(uri)
+                    }
                 }) {
                     Row(
                         modifier = modifier.fillMaxWidth()

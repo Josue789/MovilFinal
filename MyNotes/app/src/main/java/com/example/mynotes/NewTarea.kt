@@ -155,14 +155,14 @@ fun Greeting5(navHostController: NavHostController,
                 listImageTemp += "$it|"
             }
             imageUri = uri
-            showImage = !showImage
+            showImage = true
             newTareaViewModel.uriImages= fromStringList(listImageUri).toString()
         }
     }
 
     if(showImage){
         DialogShowImageTake(
-            onDismiss = { showImage = !showImage },
+            onDismiss = { showImage = false },
             imageUri = listImageUri
         )
 
@@ -192,14 +192,14 @@ fun Greeting5(navHostController: NavHostController,
                 listVideoTemp += "$it|"
             }
             videoUri = uri
-            showVideo = !showVideo
+            showVideo = true;
             newTareaViewModel.uriVideos= fromStringList(listVideoUri).toString()
         }
     }
     if(showVideo){
 
         DialogShowVideoTake(
-            onDismiss = { showVideo = !showVideo },
+            onDismiss = { showVideo = false },
             videoUri = listVideoUri
         )
     }
@@ -230,13 +230,13 @@ fun Greeting5(navHostController: NavHostController,
             listAudioTemp += "$it|"
         }
         audioUri = uri
-        showAudio = !showAudio
+        showAudio = true
         newTareaViewModel.uriAudios= fromStringList(listAudioUri).toString()
     }
 
     if(showAudio){
         DialogShowAudioSelected(
-            onDismiss = { showAudio = !showAudio },
+            onDismiss = { showAudio = false },
             fileUri = listAudioUri
         )
     }
@@ -340,9 +340,18 @@ fun Greeting5(navHostController: NavHostController,
                 val context = LocalContext.current
 
                 //Boton de Fotos
+                var pClicks by remember {
+                    mutableStateOf(0)
+                }
                 TextButton(onClick = {
-                    uri = ComposeProvider.getImageUri(context)
-                    cameraLauncher.launch(uri)
+                    pClicks ++;
+                    if(pClicks==1){
+                        showImage=true;
+                    }else{
+                        pClicks=0
+                        uri = ComposeProvider.getImageUri(context)
+                        cameraLauncher.launch(uri)
+                    }
                 }) {
                     Row(
                         modifier = modifier.fillMaxWidth()
@@ -353,9 +362,16 @@ fun Greeting5(navHostController: NavHostController,
                 }
 
                 //Boton de Video
+                var vClicks by remember{ mutableStateOf(0)}
                 TextButton(onClick = {
-                    uri = ComposeProvider.getImageUri(context)
-                    videoLauncher.launch(uri)
+                    vClicks ++;
+                    if(vClicks==1){
+                        showVideo=true;
+                    }else{
+                        vClicks=0
+                        uri = ComposeProvider.getImageUri(context)
+                        videoLauncher.launch(uri)
+                    }
                 }) {
                     Row(
                         modifier = modifier.fillMaxWidth()
@@ -366,8 +382,15 @@ fun Greeting5(navHostController: NavHostController,
                 }
 
                 //Boton de Audio
+                var aClicks by remember{ mutableStateOf(false)}
                 TextButton(onClick = {
-                    audioPickerLauncher.launch("audio/*")
+                    if(!aClicks){
+                        showAudio=true;
+                        aClicks=true;
+                    }else{
+                        aClicks=false;
+                        audioPickerLauncher.launch("audio/*")
+                    }
                 }) {
                     Row(
                         modifier = modifier.fillMaxWidth()

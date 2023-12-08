@@ -154,14 +154,14 @@ fun Greeting4(
                 listImageTemp += "$it|"
             }
             imageUri = uri
-            showImage = !showImage
+            showImage = true;
             newNoteViewModel.uriImages= fromStringList(listImageUri).toString()
         }
     }
 
     if(showImage){
         DialogShowImageTake(
-            onDismiss = { showImage = !showImage },
+            onDismiss = { showImage = false },
             imageUri = listImageUri
         )
     }
@@ -190,14 +190,14 @@ fun Greeting4(
                 listVideoTemp += "$it|"
             }
             videoUri = uri
-            showVideo = !showVideo
+            showVideo = true;
             newNoteViewModel.uriVideos= fromStringList(listVideoUri).toString()
         }
     }
     if(showVideo){
 
         DialogShowVideoTake(
-            onDismiss = { showVideo = !showVideo },
+            onDismiss = { showVideo = false},
             videoUri = listVideoUri
         )
     }
@@ -228,51 +228,17 @@ fun Greeting4(
             listAudioTemp += "$it|"
         }
         audioUri = uri
-        showAudio = !showAudio
+        showAudio = true;
         newNoteViewModel.uriAudios= fromStringList(listAudioUri).toString()
     }
 
     if(showAudio){
         DialogShowAudioSelected(
-            onDismiss = { showAudio = !showAudio },
+            onDismiss = { showAudio = false },
             fileUri = listAudioUri
         )
     }
     // seleccionar audio FIN ---------------------------------------------------------------------
-
-    // seleccionar audio INICIO ------------------------------------------------------------------
-    var fileUri by remember {
-        mutableStateOf<Uri?>(null)
-    }
-    var listFileUri by remember {
-        mutableStateOf(listOf<Uri>())
-    }
-    var showFile by remember {
-        mutableStateOf(false)
-    }
-
-    val filePickerLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent(),
-    ) { uri: Uri? ->
-        uri?.let {
-            // Aquí puedes manejar la URI del archivo seleccionado
-            listFileUri = listFileUri + it // Agrega la Uri del archivo a la lista
-        }
-        fileUri = uri
-        showFile = !showFile
-    }
-
-    if(showFile){
-        DialogShowFileSelected(
-            onDismiss = { showFile = !showFile }
-        )
-    }
-    // seleccionar audio FIN ---------------------------------------------------------------------
-
-
-
-
-
 
     Scaffold (
         modifier = Modifier
@@ -325,9 +291,18 @@ fun Greeting4(
                 val context = LocalContext.current
 
                 //Boton de Fotos
+                var pClicks by remember {
+                    mutableStateOf(0)
+                }
                 TextButton(onClick = {
-                    uri = ComposeProvider.getImageUri(context)
-                    cameraLauncher.launch(uri)
+                    pClicks ++;
+                    if(pClicks==1){
+                        showImage=true;
+                    }else{
+                        pClicks=0
+                        uri = ComposeProvider.getImageUri(context)
+                        cameraLauncher.launch(uri)
+                    }
                 }) {
                     Row(
                         modifier = modifier.fillMaxWidth()
@@ -336,23 +311,18 @@ fun Greeting4(
                         Text(text = " Foto")
                     }
                 }
-                //Boton de mostrar Fotos
-                TextButton(onClick = {
-                    //Mostrar foto
-
-                }) {
-                    Row(
-                        modifier = modifier.fillMaxWidth()
-                    ) {
-                        Icon(Icons.Filled.CameraAlt, contentDescription = "Photo")
-                        Text(text = "Mostrar Foto")
-                    }
-                }
 
                 //Boton de Video
+                var vClicks by remember{ mutableStateOf(0)}
                 TextButton(onClick = {
-                    uri = ComposeProvider.getImageUri(context)
-                    videoLauncher.launch(uri)
+                    vClicks ++;
+                    if(vClicks==1){
+                        showVideo=true;
+                    }else{
+                        vClicks=0
+                        uri = ComposeProvider.getImageUri(context)
+                        videoLauncher.launch(uri)
+                    }
                 }) {
                     Row(
                         modifier = modifier.fillMaxWidth()
@@ -361,38 +331,23 @@ fun Greeting4(
                         Text(text = " Video")
                     }
                 }
-                //Boton de mostrar Video
-                TextButton(onClick = {
-
-                }) {
-                    Row(
-                        modifier = modifier.fillMaxWidth()
-                    ) {
-                        Icon(Icons.Filled.Videocam, contentDescription = "Video")
-                        Text(text = "Mostrar Video")
-                    }
-                }
 
                 //Boton de Audio
+                var aClicks by remember{ mutableStateOf(false)}
                 TextButton(onClick = {
-                    audioPickerLauncher.launch("audio/*")
+                    if(!aClicks){
+                        showAudio=true;
+                        aClicks=true;
+                    }else{
+                        aClicks=false;
+                        audioPickerLauncher.launch("audio/*")
+                    }
                 }) {
                     Row(
                         modifier = modifier.fillMaxWidth()
                     ) {
                         Icon(Icons.Filled.Mic, contentDescription = "Audio")
                         Text(text = " Audio")
-                    }
-                }
-                //Boton de mostrar Audio
-                TextButton(onClick = {
-                    //Mostrar Audios
-                }) {
-                    Row(
-                        modifier = modifier.fillMaxWidth()
-                    ) {
-                        Icon(Icons.Filled.Mic, contentDescription = "Audio")
-                        Text(text = "Mostrar Audio")
                     }
                 }
             }

@@ -7,7 +7,7 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 
 
-@Database(entities = [NotesOb::class], version = 1, exportSchema = false)
+@Database(entities = [NotesOb::class], version = 2, exportSchema = false)
 abstract class InventoryNotesDatabase : RoomDatabase() {
 
     abstract fun itemDao(): NotesDao
@@ -17,7 +17,8 @@ abstract class InventoryNotesDatabase : RoomDatabase() {
         fun getDatabase(context: Context): InventoryNotesDatabase {
             return Instance ?: synchronized(this) {
                 Room.databaseBuilder(context, InventoryNotesDatabase::class.java, "notasDatabase")
-                    .allowMainThreadQueries() 
+                    .fallbackToDestructiveMigration()
+                    .allowMainThreadQueries()
                     .build()
                     .also { Instance = it }
             }
